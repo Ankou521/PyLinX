@@ -103,9 +103,9 @@ class BContainer(object):
                 self.delete(childKey)
             
 
-    ################
-    ## GET-Methods
-    ################
+    #################
+    ## GET-Methods ##
+    #################
             
     def get(self, attr, bComplex = False):
         if attr in type(self)._dictGetCallbacks:
@@ -150,6 +150,7 @@ class BContainer(object):
     path = property(get__path)
     
     def __get__path(self, path = u""):
+        #print "__get__path", path
         if self.__parent == None:
             return u"/" + path
         else:
@@ -157,6 +158,8 @@ class BContainer(object):
                 return self.__parent.__get__path( self.__parent.key(self) + u"/" +  path)
             except:
                 print u"Error!"
+                print u"self.__parent", self.__parent
+                print u"path", path
 
     ###############
     # SET-METHODE
@@ -169,21 +172,23 @@ class BContainer(object):
         _type = type(self)
         if attr in _type._dictSetCallbacks:
             _type._dictSetCallbacks[attr](self,setObj, options)
-        elif attr in self._dictGetCallbacks:
+        elif attr in self._dictSetCallbacks:
             self._dictSetCallbacks[attr](setObj, options)            
         else:
             if attr in _type._dictGetCallbacks:
                 raise Exception(u"BContainer.set: Attribute " + attr + u" is write-protected! Please implement a set-method to write this \
                 attribute or remove the get-method to remove write-protection!" )
             # None or empty string as attribute indicates complex set command with a whole dict to be set.
-            if attr == None or attr == u"": 
+            elif attr == None or attr == u"": 
                 types = inspect.getmro(type(setObj))
                 if dict in types:
                     return self.__set_dict(setObj, options)
                 else:
                     raise Exception("Error BContainer.set: No valid type for collective set. Use dict!")
-            if options == None: 
+            elif options == None: 
                 self.__Attributes[attr] = setObj
+                if attr == u"listPoints":
+                    print self.__Attributes
             elif options == u"-p":
                 val = self.get(attr)
                 types = inspect.getmro(type(val))
@@ -295,15 +300,15 @@ class BContainer(object):
                 return key  
         return None
             
-    def ls(self):
+    def ls(self,  bReturn = False):
         listLs = []
         for key in self.__Body:
             elem = self.getb(key)
             listLs.append((unicode(elem.get("Name")), unicode(type(elem))))
         if len(listLs) > 0:
-            self.__printLsList(sorted(listLs))
+            return self.__printLsList(sorted(listLs), bReturn)
         
-    def lsAttr(self):
+    def lsAttr(self,  bReturn = False):
         listLsAttr = []
         _type = type(self)
         for attr in self.__Attributes:
@@ -322,9 +327,9 @@ class BContainer(object):
                 line_1 += 'w'
             listLsAttr[i] = (line[0], line_1, line[2])
         if len(listLsAttr) > 0:
-            self.__printLsList(sorted(listLsAttr))            
+            return self.__printLsList(sorted(listLsAttr), bReturn)            
           
-    def __printLsList(self, lsList):
+    def __printLsList(self, lsList, bReturn = False):
         len_lsList = len(lsList)
         if len_lsList == 0:
             return
@@ -345,15 +350,20 @@ class BContainer(object):
                 max_len_cell.append(max(len_cell[i]))
             else:
                 len_cell.append([])
-                #len_cell[i] = [ 0 for cell in lsList ]
                 len_cell[i] = [ 0 ] * len(lsList)
                 max_len_cell.append(0)
+        ustrPrint = u""
         for i in range(len_lsList):
-            ustrPrint = u""
             for j in range(len(lsList[i])):
                 ustrPrint += lsList[i][j]
                 ustrPrint += u" " * (max_len_cell[j] - len_cell[j][i] + 1)
-            print ustrPrint 
+            #if i < len_lsList - 1:
+            ustrPrint += u"\n"
+        if bReturn == False:
+            print ustrPrint + u"\n"
+        else:
+            return ustrPrint
+            
 
     # moves an element
     
@@ -452,7 +462,6 @@ class BContainer(object):
                 self.__Body[key] = obj
                 obj.__parent = self                
             else:
-                print "key (2)", key
                 raise Exception(u"Key already in use. Set bForceOverwrite=True to enforce overwriting!")        
         else:
             self.__Body[key] = obj

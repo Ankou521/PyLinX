@@ -25,6 +25,7 @@ from PyLinXCompiler import *
 import PyLinXGui.PX_Templates as PX_Templ
 import PyLinXGui.PX_TabWidget_main as PX_TabWidget_main
 import PyLinXGui.PX_Tab_SignalSelect as PX_Tab_SignalSelect
+import PyLinXGui.PX_CommandConsole as PX_CommandConsole 
 import PyLinXGui.PX_Tab_Recorder as PX_Tab_Recorder
 import PyLinXData.PyLinXHelper as helper
 from PyLinXCtl import PyLinXProjectController
@@ -84,34 +85,75 @@ class PyLinXMain(QtGui.QMainWindow):
         # DrawWidget
         self.ui.drawWidget = PX_Widget_MainDrawArea.DrawWidget(self.mainController, self, self.repaintEvent )        
         
-        
         ############
-        # TabWidget
+        # TabWidgets
         ############
         
-        self.ui.TabWidget = PX_TabWidget_main.PX_TabWidget_main(mainController = self.mainController)
-        self.ui.TabWidget.setMinimumWidth(260)
+        # TabWidget left
+        ################
+
+        self.ui.TabWidgetLeft = PX_TabWidget_main.PX_TabWidget_main(mainController = self.mainController)
+        
+        self.ui.TabWidgetLeft.setMinimumWidth(260)
         
         # Info
         self.ui.TabInfo = QtGui.QWidget() 
-        self.ui.TabWidget.adjoinTab(self.ui.TabInfo, u"Info", PX_TabWidget_main.PX_TabWidget_main.DisplayRole.inEditAndSimulationMode,1)
+        self.ui.TabWidgetLeft.adjoinTab(self.ui.TabInfo, u"Info", PX_TabWidget_main.PX_TabWidget_main.DisplayRole.inEditAndSimulationMode,1)
         # Signals
         self.ui.TabSignals = PX_Tab_SignalSelect.PX_Tab_SignalSelect(self.mainController, drawWidget = self.ui.drawWidget  )
-        self.ui.TabWidget.adjoinTab(self.ui.TabSignals, u"Signals", PX_TabWidget_main.PX_TabWidget_main.DisplayRole.onlyInSimulationMode,2)
+        self.ui.TabWidgetLeft.adjoinTab(self.ui.TabSignals, u"Signals", PX_TabWidget_main.PX_TabWidget_main.DisplayRole.onlyInSimulationMode,2)
         # Elements
         self.ui.TabElements = PX_Tab_ObjectHandlerList.PX_Tab_ObjectHandlerList(self.mainController)
-        self.ui.TabWidget.adjoinTab(self.ui.TabElements, u"Elements", PX_TabWidget_main.PX_TabWidget_main.DisplayRole.onlyInEditMode,3)
+        self.ui.TabWidgetLeft.adjoinTab(self.ui.TabElements, u"Elements", PX_TabWidget_main.PX_TabWidget_main.DisplayRole.onlyInEditMode,3)
         # Recorder
         self.ui.Tabrecorder = PX_Tab_Recorder.PX_Tab_Recorder(self.mainController)
-        self.ui.TabWidget.adjoinTab(self.ui.Tabrecorder, u"Recorder", PX_TabWidget_main.PX_TabWidget_main.DisplayRole.onlyInSimulationMode,4)
+        self.ui.TabWidgetLeft.adjoinTab(self.ui.Tabrecorder, u"Recorder", PX_TabWidget_main.PX_TabWidget_main.DisplayRole.onlyInSimulationMode,4)
         
         #Connect Signal
-        self.connect(self, QtCore.SIGNAL("ctlChanged__simMode"), self.ui.TabWidget.updateTabs)
+        self.connect(self, QtCore.SIGNAL("ctlChanged__simMode"), self.ui.TabWidgetLeft.updateTabs)
         
-        # Splitter
+        # TabWidget Bottom
+        ##################
+
+        # Console
+        self.ui.Console = PX_CommandConsole.PX_CommandConsole(parent = self, mainController = self.mainController)    
+
+        self.ui.TabWidgetBottom = PX_TabWidget_main.PX_TabWidget_main(mainController = self.mainController, TabPosition = QtGui.QTabWidget.North)
+        self.ui.TabWidgetBottom.adjoinTab(self.ui.Console, u"Console", PX_TabWidget_main.PX_TabWidget_main.DisplayRole.inEditAndSimulationMode,1)
+
+        #_widget = QtGui.QWidget()
+        #self.ui.TabWidgetBottom.adjoinTab(_widget, u"Info", PX_TabWidget_main.PX_TabWidget_main.DisplayRole.inEditAndSimulationMode,2)
+        
+        self.ui.TabWidgetBottom.setMinimumHeight(120)
+        
+        #self.ui.TabWidgetBottom.updateTabs()
+        
+        #Connect Signal
+        self.connect(self, QtCore.SIGNAL("ctlChanged__simMode"), self.ui.TabWidgetBottom.updateTabs)
+        
+        # Building drawWidget and Console
+        self.ui.mainWidget = QtGui.QWidget(self)
+
+        # Splitter 2
+        self.ui.splitter2 = QtGui.QSplitter(QtCore.Qt.Vertical)
+        self.ui.splitter2.addWidget(self.ui.scrollingArea)
+        self.ui.splitter2.addWidget(self.ui.TabWidgetBottom)        
+        self.ui.splitter2.setStretchFactor(1,1)
+        self.ui.splitter2.setStretchFactor(0,3)
+        self.ui.splitter2.setStyleSheet("""
+         .QSplitter {
+             padding-left: 0px;
+             padding-top: 0px;
+             padding-right: 0px;
+             }
+         """)
+
+        
+        
+        # Splitter 1
         self.ui.splitter1 = QtGui.QSplitter(QtCore.Qt.Horizontal)
-        self.ui.splitter1.addWidget(self.ui.TabWidget)
-        self.ui.splitter1.addWidget(self.ui.scrollingArea)
+        self.ui.splitter1.addWidget(self.ui.TabWidgetLeft)
+        self.ui.splitter1.addWidget(self.ui.splitter2)
         self.ui.splitter1.setStretchFactor(1,4)
         self.ui.splitter1.setStretchFactor(0,1)
         self.ui.splitter1.setStyleSheet("""
@@ -121,6 +163,10 @@ class PyLinXMain(QtGui.QMainWindow):
             padding-right: 8px;
             }
         """)
+
+
+
+        
 
         # Connecting ScrollingArea and DrawingArea
         self.ui.scrollingArea.setWidget(self.ui.drawWidget)        
@@ -134,14 +180,18 @@ class PyLinXMain(QtGui.QMainWindow):
         ####################
         
         self.connect(self.ui.drawWidget, QtCore.SIGNAL(u"guiAction__drawWidget_dropped"),self.ui.TabSignals.repaint)
+        self.connect(self, QtCore.SIGNAL(u"dataChanged__coreDataObjects"),self.ui.TabElements.repaint)
+        self.connect(self, QtCore.SIGNAL(u"ctlChanged__commandInit"), self.ui.Console.commandInit)
+        self.connect(self, QtCore.SIGNAL(u"ctlChanged__commandExit"), self.ui.Console.commandExit)
         
+
         # Menu-Bar
             
-            # Programm
+        # Programm
         
         self.ui.actionClose.triggered.connect(self.closeApplication)
         
-            # Project
+        # Project
         
         self.ui.actionNewProject.triggered.connect(self.on_actionNewProject)
         self.ui.actionLoadProject.triggered.connect(self.on_actionLoadProject)
@@ -175,8 +225,8 @@ class PyLinXMain(QtGui.QMainWindow):
         # ExampleData
         ################
 
+        #_file = open(r"D:\Projekte\PyLinX\Aptana-Projekte\PyLinX2\Recources\Testfiles\testBugOszi.pyp")
         _file = open(r"D:\Projekte\PyLinX\Aptana-Projekte\PyLinX2\Recources\Testdata\testProjekt_setUeberarbeitung.pyp")
-        #_file = open(r"D:\Projekte\PyLinX\Aptana-Projekte\PyLinX2\Recources\TestCases\testCase_Bug_GetNeu.pyp")
         self.__loadFile(_file)
 
         script = u"new varElement TestVar_0 150 90 15 refName=\"TestVar_0\"\n\
@@ -186,15 +236,13 @@ new basicOperator + 300.0 100.0 name=u\"Operator_1\"\n\
 new connector TestVar_0 Operator_1 idxInPin=-1\n\
 new connector Variable_id4_1 Operator_1 idxInPin=-2\n\
 new connector Operator_1 Variable_id4_2 idxInPin=-1"
-            
-        #self.mainController.execScript(script)        
 
         ############
         # Finish
         ############
         
         # Show GUI
-        self.ui.resize(800,600)
+        self.ui.resize(1200,800)
         self.ui.show()
         
 ######################
@@ -310,7 +358,8 @@ new connector Operator_1 Variable_id4_2 idxInPin=-1"
         self.mainController = PyLinXProjectController.PyLinXProjectController(mainWindow = self )
         # TODO: should be removed in the long term
         self.ui.drawWidget.newProject(self.mainController)
-        self.ui.TabWidget.newProject(self.mainController)
+        self.ui.TabWidgetLeft.newProject(self.mainController)
+        self.ui.TabWidgetBottom.newProject(self.mainController)
         
         _file_read = _file.read()
         self.mainController.execScript(_file_read)
@@ -347,7 +396,7 @@ new connector Operator_1 Variable_id4_2 idxInPin=-1"
         self.runThreadMessageQueue.put(u"stopRun")
         
 
-def run():
+def _run():
     app = QtGui.QApplication(sys.argv)
     PyLinXMain()   
     app.exec_()
@@ -358,6 +407,7 @@ if __name__ == '__main__':
     PROFILE = False
     
     if PROFILE:
-        cProfile.run('run()')
+        cProfile.run('_run()')
     else:
-        run()
+        #exec('_run()')
+        _run()

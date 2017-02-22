@@ -24,7 +24,7 @@ licenseOption = 0
 
 if licenseOption == 0:
     try:
-        import mdfreader as mdflib
+        import mdfreader #as mdflib
     except:
         raise Exception(u"Error PX_Signals: Library mdfreader is missing! Please catch up for...")
 
@@ -62,6 +62,7 @@ class PX_SignalsFolder(PyLinXCoreDataObjects.PX_IdObject):
     
     def get__bSignalLoaded(self):
         bSignalLoaded = False
+        
         for key in self.getChildKeys():
             obj = self.getb(key)
             types = inspect.getmro(type(obj))
@@ -120,24 +121,29 @@ class PX_Signals (PyLinXCoreDataObjects.PX_IdObject):
     
     def __init__(self, parent, path):
         
-        try:
-            dataObject = mdflib.mdf(path)
-            fileType = PX_Signals.fileType.mdf
-             
+        print "path", path
+        dataObject = mdfreader.mdf(path)
+        fileType = PX_Signals.fileType.mdf
         
-        except Exception as exc:
-            
-            try:
-                dataObject = csvlib.CSVObject(path).data()
-                fileType = PX_Signals.fileType.csv
-            
-            except Exception as exc2:
-            
-                strExp = str(exc)
-                strExp2 = str(exc2)
-                strText = u"Unable to open file - " + strExp + " - " + strExp2  
-                helper.error(strText)
-                return
+#         try:
+#             print "path", path
+#             dataObject = mdfreader.mdf(path)
+#             fileType = PX_Signals.fileType.mdf
+#              
+#         
+#         except Exception as exc:
+#             
+#             try:
+#                 dataObject = csvlib.CSVObject(path).data()
+#                 fileType = PX_Signals.fileType.csv
+#             
+#             except Exception as exc2:
+#             
+#                 strExp = str(exc)
+#                 strExp2 = str(exc2)
+#                 strText = u"Unable to open file - " + strExp + " - " + strExp2  
+#                 helper.error(strText)
+#                 return
 
         name = u"Signal"
         super(PX_Signals, self).__init__(parent, name, bIdSuffix = True, headObject = dataObject)
@@ -215,7 +221,6 @@ class PX_Signals (PyLinXCoreDataObjects.PX_IdObject):
     def get__signalsFullData(self):
         dictSignals = {}
         for key in self.geth().keys():
-            dictSignals[key] = self.__get_signal(key)
+            dictSignals[key] = self.get_signal(key)
         return dictSignals
     _dictGetCallbacks.addCallback(u"signalsFullData", get__signalsFullData)      
-          

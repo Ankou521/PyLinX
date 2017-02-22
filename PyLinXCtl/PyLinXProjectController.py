@@ -58,9 +58,11 @@ class PyLinXProjectController(BController.BController):
         # The Controller could instantiated without a GUI. In this case no actions are avaiable
         #######################################################################################
         if bListActions:
-            self.__listActions = [None, mainWindow.ui.actionNewElement, mainWindow.ui.actionNewPlus,\
-                               mainWindow.ui.actionNewMinus, \
-                               mainWindow.ui.actionNewMultiplication, mainWindow.ui.actionNewDivision] 
+            self.__listActions = [None, mainWindow.ui.actionNewElement, \
+                                        mainWindow.ui.actionNewPlus,\
+                                        mainWindow.ui.actionNewMinus, \
+                                        mainWindow.ui.actionNewMultiplication, \
+                                        mainWindow.ui.actionNewDivision] 
 
 
         # Seting sonme attributes
@@ -120,9 +122,11 @@ class PyLinXProjectController(BController.BController):
     # Execute specific commands
     ############################
 
-    def __execCommand_select(self, command):
+    def execCommand_select(self, command):
         
-        self._BController__execCommand_select(command)
+        BController.BController.execCommand_select(self,command)
+        
+        self._BController__mainWindow.emit(QtCore.SIGNAL(u"dataChanged__latentObjects"))           
         
         # reset ConnectorToModify if necessary
         len_selection = len(self.selection)
@@ -135,7 +139,7 @@ class PyLinXProjectController(BController.BController):
                     return  self.set(u"ConnectorToModify", None)
                                 
         self.activeFolder.set(u"ConnectorToModify", None )
-        self.activeFolder.set(u"idxPointModified" , None )                   
+        self.activeFolder.set(u"idxPointModified" , None )
    
     
     ###################
@@ -158,7 +162,10 @@ class PyLinXProjectController(BController.BController):
     # lenDataDictionary
     ###################
     def get__lenDataDictionary(self):
-        return len(self.getb(u"DataDictionary"))
+        if self.isInBody(u"DataDictionary"):
+            return len(self.getb(u"DataDictionary"))
+        else:
+            return None
     _dictGetCallbacks.addCallback(u"lenDataDictionary", get__lenDataDictionary)
     
     def set__lenDataDictionary(self, value, options=None):
@@ -274,15 +281,28 @@ class PyLinXProjectController(BController.BController):
         if self.bConnectorPloting:
             if value == False:
                 self.latentGraphics.set(u"bConnectorPloting", False)
+                #self.latentGraphics.set(u"bHasProxyElement", False)
                 self.set(u"ConnectorPloting", None)
                 self.set(u"idxToolSelected", PyLinXHelper.ToolSelected.none)
-            self._BContainer__Attributes[u"bConnectorPloting"] = False
+                self._BContainer__Attributes[u"bConnectorPloting"] = False
         else:      
             self._BContainer__Attributes[u"bConnectorPloting"] = True
+        
     _dictSetCallbacks.addCallback(u"bConnectorPloting",  set__bConnectorPloting )       
     bConnectorPloting = property(lambda obj: PyLinXData.BContainer.BContainer.get(obj, u"bConnectorPloting"), set__bConnectorPloting)            
     
-
+    # px_mousePressedAt_XY
+    
+    def set__px_mousePressedAt_XY(self, XY, options = None):
+        self._BContainer__Attributes[u"px_mousePressedAt_X"] = XY[0]
+        self._BContainer__Attributes[u"px_mousePressedAt_Y"] = XY[1]
+        self._BController__mainWindow.emit(QtCore.SIGNAL("ctlChanged__tempDataObjectsData"))
+    _dictSetCallbacks.addCallback(u"px_mousePressedAt_XY",  set__px_mousePressedAt_XY ) 
+    
+    def get__px_mousePressedAt_XY(self):
+        return (self._BContainer__Attributes[u"px_mousePressedAt_X"], self._BContainer__Attributes[u"px_mousePressedAt_Y"])
+    _dictGetCallbacks.addCallback(u"px_mousePressedAt_XY",  get__px_mousePressedAt_XY ) 
+    px_mousePressedAt_XY = property(get__px_mousePressedAt_XY, set__px_mousePressedAt_XY)
     
     ######################################
     # Methods used for running simulations

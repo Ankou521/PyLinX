@@ -25,18 +25,6 @@ class QListWidget_ObjHandler(QtGui.QListWidget):
             event.accept()
         else:
             event.ignore()
-
-#     def dropEvent(self, event):
-#         print "DROP EVENT"
-#         if event.mimeData().hasUrls:
-#             event.setDropAction(QtCore.Qt.CopyAction)
-#             event.accept()
-#             links = []
-#             for url in event.mimeData().urls():
-#                 links.append(str(url.toLocalFile()))
-#             self.emit(QtCore.SIGNAL("dropped"), links)
-#         else:
-#             event.ignore()
             
     def doubleClickEvent(self, modelIndex):
         print u"doubleClocked"

@@ -3,12 +3,8 @@ Created on 11.03.2015
 
 @author: Waetzold Plaum
 '''
-#import copy
 from PyQt4 import QtGui, QtCore
 
-# from PyLinXData import BContainer, PyLinXCoreDataObjects, \
-#            PyLinXHelper,PX_Signals,PX_DataDictionary
-#import PX_Templates as PX_Templ
 from PyLinXGui import BEasyWidget#
 
 class PX_Dialogue_SelectDataViewer(QtGui.QDialog):
@@ -75,29 +71,8 @@ class PX_Dialogue_SelectDataViewer(QtGui.QDialog):
         self.hide()
         
     def on_accept(self):
-        
         self.result = True
-        values = self.formWidget.getValues()
-        listSelectedDispObj_new = []
-        idx = self.mainController.get(u"idxLastSelectedDataViewer")
-        #listSelectedDispObj = self.variable.get(u"listSelectedDispObj")
-        
-        for key in values:
-            if u"bDataViewer_" in key:
-                if values[key]:
-                    listSelectedDispObj_new.append(int(key[12:]))
-        
-        if values[u"bNewDataViewer"]:
-            execStr = u"new dataViewer 50 50"
-            newVarDispObj = self.mainController.execCommand(execStr)
-            idx = newVarDispObj.get(u"idxDataDispObj")
-            listSelectedDispObj_new.append(idx)
-      
-        execStr = u"set " + self.variable.objPath[:-1] + u".listSelectedDispObj " +\
-                unicode(repr(listSelectedDispObj_new).replace(u" ", u""))                  
-        self.mainController.execCommand(execStr)
-
-        self.mainController.set(u"idxLastSelectedDataViewer", idx)
+        self.values = self.formWidget.getValues()
         self.hide()
         
     @staticmethod
@@ -106,5 +81,5 @@ class PX_Dialogue_SelectDataViewer(QtGui.QDialog):
         '''result =''' 
         dialog.exec_()
         drawWidget.repaint() 
-        return dialog.result
+        return dialog.result, dialog.values
         

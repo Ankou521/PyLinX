@@ -7,6 +7,7 @@ import PyLinXData.PX_ObjectHandler as PX_ObjectHandler
 #import PyLinXData.PX_ObjectHandler.PX_Recorder as PX_Recorder
 
 class PX_Tab_Recorder_TreeView(QtGui.QTreeView):
+
     def __init__(self, parent=None, listItems={}, mainDrawingWidget = None):
         super(PX_Tab_Recorder_TreeView, self).__init__(parent)
         self.setIconSize(QtCore.QSize(16, 16))
@@ -17,8 +18,6 @@ class PX_Tab_Recorder_TreeView(QtGui.QTreeView):
              
     def doubleClickEvent(self, modelIndex):
         print u"doubleClicked"
-         
-
 
 class NamedQStandardItem(QtGui.QStandardItem):
 

@@ -52,11 +52,17 @@ class PX_CodableBasicOperator(PX_CodeRefObject):
             print "TODO: Error-Handling (2)"
         else:
             keys = self.getChildKeys()
-            objs = [self.getb(key).get_ref() for key in keys]
+            objs = [self.getb(key).get_ref() for key in keys]   # list of corresponding core data objects
             variables = {}
+            
+            # Notice: Python convention of negative list indices !!!
+            # Dict of the variable strings left and right of the operator
+            #         reading the mapping                   Code of the variable Variable generated 
+            #         ID -> Order of connection             by the code-Ref object of connected elements 
             variables[self.__orderConnection[objs[0].ID]] = self.getb(keys[0]).getCode(Code)
             variables[self.__orderConnection[objs[1].ID]] = self.getb(keys[1]).getCode(Code)
             operator = self.ref._BContainer__Head
+            
             return u"( " + variables[-1] + u" " + operator + u" " + variables[-2] + u" ) "
 
 
@@ -70,18 +76,21 @@ class PX_CodableVarElement(PX_CodeRefObject):
         self.CodingVariant = CodingVariant
         
     def getCode(self, Code):
-
-        lenBody = len(self._BContainer__Body)
         name = self.ref.get(u"DisplayName") 
-        if lenBody == 1:
+        if self.__elementIsConnected():
             _input = self.getb(self.getChildKeys()[0])
-            if self.CodingVariant == PyLinXRunEngine.PX_CodeAnalyser.CodingVariant.ReadSingleVars: 
-                code_to_add = name + u" = " + _input.getCode(Code)
-            elif self.CodingVariant == PyLinXRunEngine.PX_CodeAnalyser.CodingVariant.ReadVarsFromDataDict:
-                code_to_add = u"DataDictionary[u\"" + name + u"\"]" + u" = " + _input.getCode(Code)
+            code_to_add = self.__getCode_getVarName(name) + u" = " + _input.getCode(Code)
+            # So far this is the ONLY part of the code generator, where a new line of code is added to the generated core code! 
             Code.appendLine(code_to_add)
-        if self.CodingVariant == PyLinXRunEngine.PX_CodeAnalyser.CodingVariant.ReadSingleVars: 
-            return name
-        elif self.CodingVariant == PyLinXRunEngine.PX_CodeAnalyser.CodingVariant.ReadVarsFromDataDict:
-            return u"DataDictionary[u\"" + name + u"\"]"
+        return self.__getCode_getVarName(name)
+    
+    def __elementIsConnected(self):
+        lenBody = len(self._BContainer__Body)
+        return (lenBody == 1)
         
+    def __getCode_getVarName(self, rawName):
+        if self.CodingVariant == PyLinXRunEngine.PX_CodeAnalyser.CodingVariant.ReadSingleVars:
+            retName = rawName
+        elif self.CodingVariant == PyLinXRunEngine.PX_CodeAnalyser.CodingVariant.ReadVarsFromDataDict:
+            retName =  u"DataDictionary[u\"" + rawName + u"\"]"
+        return retName

@@ -40,3 +40,9 @@ class Code(BList):
         else:
             self.__nIndent = 0
             
+    def printList(self):
+        printstr = u"["
+        for item in self:
+            printstr += str(item) + u","
+        printstr += u"]"
+        print printstr    

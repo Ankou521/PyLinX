@@ -872,52 +872,52 @@ Example Qt-GUI
 '''
 
 # from PyQt4 import QtCore, QtGui
-# 
-# 
+#  
+#  
 # class Window(QtGui.QWidget):
 #     def __init__(self, parent=None):
 #         super(Window, self).__init__(parent)
-# 
+#  
 #         grid = QtGui.QGridLayout()
 #         grid.addWidget(self.createFirstExclusiveGroup(), 0, 0)
 #         grid.addWidget(self.createSecondExclusiveGroup(), 1, 0)
 #         grid.addWidget(self.createNonExclusiveGroup(), 0, 1)
 #         grid.addWidget(self.createPushButtonGroup(), 1, 1)
 #         self.setLayout(grid)
-# 
+#  
 #         self.setWindowTitle("Group Box")
 #         self.resize(480, 320)
-# 
+#  
 #     def createFirstExclusiveGroup(self):
 #         groupBox = QtGui.QGroupBox("Exclusive Radio Buttons")
-# 
+#  
 #         radio1 = QtGui.QRadioButton("&Radio button 1")
 #         radio2 = QtGui.QRadioButton("R&adio button 2")
 #         radio3 = QtGui.QRadioButton("Ra&dio button 3")
-# 
+#  
 #         radio1.setChecked(True)
-# 
+#  
 #         vbox = QtGui.QVBoxLayout()
 #         vbox.addWidget(radio1)
 #         vbox.addWidget(radio2)
 #         vbox.addWidget(radio3)
 #         vbox.addStretch(1)
 #         groupBox.setLayout(vbox)
-# 
+#  
 #         return groupBox
-# 
+#  
 #     def createSecondExclusiveGroup(self):
 #         groupBox = QtGui.QGroupBox("E&xclusive Radio Buttons")
 #         groupBox.setCheckable(True)
 #         groupBox.setChecked(False)
-# 
+#  
 #         radio1 = QtGui.QRadioButton("Rad&io button 1")
 #         radio2 = QtGui.QRadioButton("Radi&o button 2")
 #         radio3 = QtGui.QRadioButton("Radio &button 3")
 #         radio1.setChecked(True)
 #         checkBox = QtGui.QCheckBox("Ind&ependent checkbox")
 #         checkBox.setChecked(True)
-# 
+#  
 #         vbox = QtGui.QVBoxLayout()
 #         vbox.addWidget(radio1)
 #         vbox.addWidget(radio2)
@@ -925,41 +925,41 @@ Example Qt-GUI
 #         vbox.addWidget(checkBox)
 #         vbox.addStretch(1)
 #         groupBox.setLayout(vbox)
-# 
+#  
 #         return groupBox
-# 
+#  
 #     def createNonExclusiveGroup(self):
 #         groupBox = QtGui.QGroupBox("Non-Exclusive Checkboxes")
 #         groupBox.setFlat(True)
-# 
+#  
 #         checkBox1 = QtGui.QCheckBox("&Checkbox 1")
 #         checkBox2 = QtGui.QCheckBox("C&heckbox 2")
 #         checkBox2.setChecked(True)
 #         tristateBox = QtGui.QCheckBox("Tri-&state button")
 #         tristateBox.setTristate(True)
 #         tristateBox.setCheckState(QtCore.Qt.PartiallyChecked)
-# 
+#  
 #         vbox = QtGui.QVBoxLayout()
 #         vbox.addWidget(checkBox1)
 #         vbox.addWidget(checkBox2)
 #         vbox.addWidget(tristateBox)
 #         vbox.addStretch(1)
 #         groupBox.setLayout(vbox)
-# 
+#  
 #         return groupBox
-# 
+#  
 #     def createPushButtonGroup(self):
 #         groupBox = QtGui.QGroupBox("&Push Buttons")
 #         groupBox.setCheckable(True)
 #         groupBox.setChecked(True)
-# 
+#  
 #         pushButton = QtGui.QPushButton("&Normal Button")
 #         toggleButton = QtGui.QPushButton("&Toggle Button")
 #         toggleButton.setCheckable(True)
 #         toggleButton.setChecked(True)
 #         flatButton = QtGui.QPushButton("&Flat Button")
 #         flatButton.setFlat(True)
-# 
+#  
 #         popupButton = QtGui.QPushButton("Pop&up Button")
 #         menu = QtGui.QMenu(self)
 #         menu.addAction("&First Item")
@@ -967,14 +967,14 @@ Example Qt-GUI
 #         menu.addAction("&Third Item")
 #         menu.addAction("F&ourth Item")
 #         popupButton.setMenu(menu)
-# 
+#  
 #         newAction = menu.addAction("Submenu")
 #         subMenu = QtGui.QMenu("Popup Submenu", self)
 #         subMenu.addAction("Item 1")
 #         subMenu.addAction("Item 2")
 #         subMenu.addAction("Item 3")
 #         newAction.setMenu(subMenu)
-# 
+#  
 #         vbox = QtGui.QVBoxLayout()
 #         vbox.addWidget(pushButton)
 #         vbox.addWidget(toggleButton)
@@ -982,14 +982,14 @@ Example Qt-GUI
 #         vbox.addWidget(popupButton)
 #         vbox.addStretch(1)
 #         groupBox.setLayout(vbox)
-# 
+#  
 #         return groupBox
-# 
-# 
+#  
+#  
 # if __name__ == '__main__':
-# 
+#  
 #     import sys
-# 
+#  
 #     app = QtGui.QApplication(sys.argv)
 #     clock = Window()
 #     clock.show()
@@ -2267,125 +2267,125 @@ Example Treeview'''
 
 """The user interface for our app"""
 
-# import os,sys,time
-# 
-# # Import Qt modules
-# from PyQt4 import QtCore,QtGui, QtOpenGL
-# 
-# # Import the compiled UI module
-# from ui_clock import Ui_Form
-# 
-# from random import randint, shuffle
-# 
-# # Create a class for our main window
-# class Main(QtGui.QWidget):
-#     def __init__(self):
-#         QtGui.QWidget.__init__(self)
-# 
-#         # This is always the same
-#         self.ui=Ui_Form()
-#         self.ui.setupUi(self)
-# 
-#         self.scene=QtGui.QGraphicsScene()
-#         self.scene.setSceneRect(0,0,600,400)
-#         self.ui.view.setScene(self.scene)
-#         #self.ui.view.setViewport(QtOpenGL.QGLWidget())
-#         self.populate()
-#         self.setWindowState(QtCore.Qt.WindowMaximized)
-# 
-#         self.animator=QtCore.QTimer()
-#         self.animator.timeout.connect(self.animate)
-#         self.animate()
-# 
-#     def populate(self):
-#         self.digits=[]
-#         self.animations=[]
-#         font=QtGui.QFont('White Rabbit')
-#         font.setPointSize(120)
-# 
-#         self.dot1=QtGui.QGraphicsTextItem(':')
-#         self.dot1.setFont(font)
-#         self.dot1.setPos(140,0)
-#         self.scene.addItem(self.dot1)
-#         self.dot2=QtGui.QGraphicsTextItem(':')
-#         self.dot2.setFont(font)
-#         self.dot2.setPos(410,0)
-#         self.scene.addItem(self.dot2)
-# 
-#         for i in range(60):
-#             l = QtGui.QGraphicsTextItem(str(i%10))
-#             l.setFont(font)
-#             l.setZValue(-100)
-#             l.setPos(randint(0,500),randint(150,300))
-#             l.setOpacity(.3)
-#             #l.setDefaultTextColor(QtGui.QColor('lightgray'))
-#             self.scene.addItem(l)
-#             self.digits.append(l)
-# 
-#     def animate(self):
-#         self.animations=range(0,60)
-# 
-#         def animate_to(t,item,x,y,angle):
-#             animation=QtGui.QGraphicsItemAnimation()
-#             timeline=QtCore.QTimeLine(1000)
-#             timeline.setFrameRange(0,100)
-#             animation.setPosAt(t,QtCore.QPointF(x,y))
-#             animation.setRotationAt(t,angle)
-#             animation.setItem(item)
-#             animation.setTimeLine(timeline)
-#             return animation
-# 
-#         offsets=range(6)
-#         shuffle(offsets)
-# 
-#         # Some, animate with purpose
-#         h1,h2=map(int,'%02d'%time.localtime().tm_hour)
-#         h1+=offsets[0]*10
-#         h2+=offsets[1]*10
-#         self.animations[h1]=animate_to(0.2,self.digits[h1],-40,0,0)
-#         self.animations[h2]=animate_to(0.2,self.digits[h2],50,0,0)
-# 
-#         m1,m2=map(int,'%02d'%time.localtime().tm_min)
-#         m1+=offsets[2]*10
-#         m2+=offsets[3]*10
-#         self.animations[m1]=animate_to(0.2,self.digits[m1],230,0,0)
-#         self.animations[m2]=animate_to(0.2,self.digits[m2],320,0,0)
-# 
-#         s1,s2=map(int,'%02d'%time.localtime().tm_sec)
-#         s1+=offsets[4]*10
-#         s2+=offsets[5]*10
-#         self.animations[s1]=animate_to(0.2,self.digits[s1],500,0,0)
-#         self.animations[s2]=animate_to(0.2,self.digits[s2],590,0,0)
-# 
-#         # Random animations
-#         for i in range(60):
-#             l = self.digits[i]
-#             if i in [h1,h2,m1,m2,s1,s2]:
-#                 l.setOpacity(1)
-#                 continue
-#             l.setOpacity(.3)
-#             self.animations[i]=animate_to(1,l,randint(0,500),randint(0,300),randint(0,0))
-# 
-#         [ animation.timeLine().start() for animation in self.animations ]
-# 
-# 
-#         self.animator.start(1000)
-#         
-# 
-# def main():
-#     # Again, this is boilerplate, it's going to be the same on
-#     # almost every app you write
-#     app = QtGui.QApplication(sys.argv)
-#     window=Main()
-#     window.show()
-# 
-# 
-#     # It's exec_ because exec is a reserved word in Python
-#     sys.exit(app.exec_())
-# 
-# 
-# if __name__ == "__main__":
-#     main()
+import os,sys,time
+ 
+# Import Qt modules
+from PyQt4 import QtCore,QtGui, QtOpenGL
+ 
+# Import the compiled UI module
+from ui_clock import Ui_Form
+ 
+from random import randint, shuffle
+ 
+# Create a class for our main window
+class Main(QtGui.QWidget):
+    def __init__(self):
+        QtGui.QWidget.__init__(self)
+ 
+        # This is always the same
+        self.ui=Ui_Form()
+        self.ui.setupUi(self)
+ 
+        self.scene=QtGui.QGraphicsScene()
+        self.scene.setSceneRect(0,0,600,400)
+        self.ui.view.setScene(self.scene)
+        #self.ui.view.setViewport(QtOpenGL.QGLWidget())
+        self.populate()
+        self.setWindowState(QtCore.Qt.WindowMaximized)
+ 
+        self.animator=QtCore.QTimer()
+        self.animator.timeout.connect(self.animate)
+        self.animate()
+ 
+    def populate(self):
+        self.digits=[]
+        self.animations=[]
+        font=QtGui.QFont('White Rabbit')
+        font.setPointSize(120)
+ 
+        self.dot1=QtGui.QGraphicsTextItem(':')
+        self.dot1.setFont(font)
+        self.dot1.setPos(140,0)
+        self.scene.addItem(self.dot1)
+        self.dot2=QtGui.QGraphicsTextItem(':')
+        self.dot2.setFont(font)
+        self.dot2.setPos(410,0)
+        self.scene.addItem(self.dot2)
+ 
+        for i in range(60):
+            l = QtGui.QGraphicsTextItem(str(i%10))
+            l.setFont(font)
+            l.setZValue(-100)
+            l.setPos(randint(0,500),randint(150,300))
+            l.setOpacity(.3)
+            #l.setDefaultTextColor(QtGui.QColor('lightgray'))
+            self.scene.addItem(l)
+            self.digits.append(l)
+ 
+    def animate(self):
+        self.animations=range(0,60)
+ 
+        def animate_to(t,item,x,y,angle):
+            animation=QtGui.QGraphicsItemAnimation()
+            timeline=QtCore.QTimeLine(1000)
+            timeline.setFrameRange(0,100)
+            animation.setPosAt(t,QtCore.QPointF(x,y))
+            animation.setRotationAt(t,angle)
+            animation.setItem(item)
+            animation.setTimeLine(timeline)
+            return animation
+ 
+        offsets=range(6)
+        shuffle(offsets)
+ 
+        # Some, animate with purpose
+        h1,h2=map(int,'%02d'%time.localtime().tm_hour)
+        h1+=offsets[0]*10
+        h2+=offsets[1]*10
+        self.animations[h1]=animate_to(0.2,self.digits[h1],-40,0,0)
+        self.animations[h2]=animate_to(0.2,self.digits[h2],50,0,0)
+ 
+        m1,m2=map(int,'%02d'%time.localtime().tm_min)
+        m1+=offsets[2]*10
+        m2+=offsets[3]*10
+        self.animations[m1]=animate_to(0.2,self.digits[m1],230,0,0)
+        self.animations[m2]=animate_to(0.2,self.digits[m2],320,0,0)
+ 
+        s1,s2=map(int,'%02d'%time.localtime().tm_sec)
+        s1+=offsets[4]*10
+        s2+=offsets[5]*10
+        self.animations[s1]=animate_to(0.2,self.digits[s1],500,0,0)
+        self.animations[s2]=animate_to(0.2,self.digits[s2],590,0,0)
+ 
+        # Random animations
+        for i in range(60):
+            l = self.digits[i]
+            if i in [h1,h2,m1,m2,s1,s2]:
+                l.setOpacity(1)
+                continue
+            l.setOpacity(.3)
+            self.animations[i]=animate_to(1,l,randint(0,500),randint(0,300),randint(0,0))
+ 
+        [ animation.timeLine().start() for animation in self.animations ]
+ 
+ 
+        self.animator.start(1000)
+         
+ 
+def main():
+    # Again, this is boilerplate, it's going to be the same on
+    # almost every app you write
+    app = QtGui.QApplication(sys.argv)
+    window=Main()
+    window.show()
+ 
+ 
+    # It's exec_ because exec is a reserved word in Python
+    sys.exit(app.exec_())
+ 
+ 
+if __name__ == "__main__":
+    main()
 
 '''QSplitter'''
 
@@ -3188,12 +3188,14 @@ CSV-Example
 # command = u"Hallo \"String mit einem Pfad\""
 # print command
 # print _strip(command)
-import shlex
-import subprocess
-import PyLinXData.BContainer as BContainer   
 
-file_name = BContainer.__file__
-command = 'pyreverse -c Composite -mn -a1 -s1 -f ALL -o png {0}'.format(file_name)
-print command
-#subprocess.call(shlex.split(command))
-#subprocess.call(command)
+'''Beispiel pyreverse (Erstellung von Klassengraphen '''
+# import shlex
+# import subprocess
+# import PyLinXData.BContainer as BContainer   
+# 
+# file_name = BContainer.__file__
+# command = 'pyreverse -c Composite -mn -a1 -s1 -f ALL -o png {0}'.format(file_name)
+# print command
+# #subprocess.call(shlex.split(command))
+# #subprocess.call(command)

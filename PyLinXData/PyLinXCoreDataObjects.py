@@ -18,11 +18,6 @@ import PyLinXCtl
 
 import PyLinXGui
 
-#NEW
-#import PX_ObjectHandler.PX_ObjectHandler as PX_ObjectHandler
-#import PX_ObjectHandler
-
-
 ## Meta-Class for all PyLinX data Objects,
 
 class PX_Object(BContainer.BContainer):
@@ -196,7 +191,6 @@ class PX_PlottableObject (PX_Object):#, QtGui.QGraphicsItem):
         for key in self._BContainer__Body:
             element = self._BContainer__Body[key]
             if element.isAttrTrue(u"bVisible"):
-            #if element.bVisible:
                 if element.isAttrTrue(u"bLatent"):
                     listLatent.append(element)
                     continue
@@ -259,16 +253,17 @@ class PX_PlottableLatentGraphicsContainer(PX_PlottableObject):
                 return True
         return False
     _dictGetCallbacks.addCallback(u"bHasProxyElement", get__bHasProxyElement)   
-            
+             
     def set__bHasProxyElement(self, val, options = None):
         if val == False:
             keys = self.getChildKeys()
             for key in keys:        
                 element = self.getb(key)
                 types = inspect.getmro(type(element))
-                if PX_PlottableProxyElement in types:
+                if (PX_PlottableProxyElement in types): #or (PX_PlottableConnector in types):
                     self.delete(key)
                     break
+ 
         elif val == True:
                 x = self.mainController.get("px_mousePressedAt_x")
                 y = self.mainController.get("px_mousePressedAt_y")
@@ -277,10 +272,37 @@ class PX_PlottableLatentGraphicsContainer(PX_PlottableObject):
             raise Exception("Error: None logical argument PX_PlottableObject.bHasProxyElement")        
     _dictSetCallbacks.addCallback(u"bHasProxyElement", set__bHasProxyElement)
     bHasProxyElement = property(get__bHasProxyElement, set__bHasProxyElement)
+
+    # bConnectorPloting
+    
+    def set__bConnectorPloting(self, val, options = None):
+        if val == False:
+            for key in self.getChildKeys():
+                element = self.getb(key)
+                if type(element) == PX_PlottableConnector:
+                    self.delete(element.get(u"Name"))
+                    self.mainController.mainWindow.emit(QtCore.SIGNAL(u"dataChanged__latentObjects"))
+        elif val == True:
+            self._BContainer__Attributes[u"bContainerPloting"] = True
+            self.mainController.mainWindow.emit(QtCore.SIGNAL(u"dataChanged__latentObjects"))
+        else:
+            raise Exception(u"Error PX_PlottableLatentGraphicsContainer.set__bConnectorPloting: Only bool values are allowed!")
+    _dictSetCallbacks.addCallback(u"bConnectorPloting", set__bConnectorPloting)    
+    
+    def get__bConnectorPloting(self):
+        retVal = False
+        for key in self.getChildKeys():
+            element = self.getb(key)
+            if type(element) == PX_PlottableConnector:
+                retVal = True
+        return retVal
+    _dictGetCallbacks.addCallback(u"bConnectorPloting", get__bConnectorPloting)    
+    bConnectorPloting = property(get__bConnectorPloting, set__bConnectorPloting)     
+        
     
 # Meta-Class for all persistent Objects that could be plotted
 
-class PX_PlottableIdObject(PX_PlottableObject, PX_IdObject ):
+class PX_PlottableIdObject(PX_PlottableObject, PX_IdObject):
 
     # Necessary due to diamant inheritance
     _dictSetCallbacks = copy.copy(PX_PlottableObject._dictSetCallbacks)
@@ -396,7 +418,7 @@ class PX_PlottableElement(PX_PlottableIdObject):
     def get__xy(self):
         return (self.get_X(), self.get_Y())        
     _dictGetCallbacks.addCallback(u"xy", get__xy)
-    xy = property(get__xy, set__xy)     # Attention property xy is overwritten in class PX_PlottableProxyElement, but it's OK
+    xy = property(get__xy, set__xy)     # Attention: property xy is overwritten in class PX_PlottableProxyElement, but it's OK
     
     
     #############
@@ -519,7 +541,7 @@ class PX_PlottableElement(PX_PlottableIdObject):
         
         ## plot the main square of the Element
                 
-        if self.bActive:
+        if self.bActive and not self.mainController.bSimulationMode:
             paint.setPen(PX_PlottableElement.penHighlight)
             paint.setBrush(PX_Templ.brush.Highlight)
             paint.drawRect(self.x,self.y, self.elementWidth, self.elementHeigth)
@@ -693,9 +715,23 @@ class PX_PlottableProxyElement(PX_PlottableElement):
         ConnectorPloting.set(u"listPoints", listPoints)
         self.X = x
         self.Y = y
+        self.mainController.mainWindow.emit(QtCore.SIGNAL(u"dataChanged__latentObjects"))
+        
     _dictSetCallbacks.addCallback(u"xy", set__xy)
+    _dictGetCallbacks.addCallback(u"xy", PX_PlottableElement.get__xy)
     xy = property(PX_PlottableElement.get__xy, set__xy) # Attention property xy overwrites property of class PX_PlottableElement, but it's OK
 
+    def get__xy_temp(self):
+        return (self.X, self.Y)
+    _dictGetCallbacks.addCallback(u"xy_temp", get__xy_temp)
+    
+    def set__xy_temp(self, val, options = None):
+        self.X = val[0]
+        self.Y = val[1]
+        self.mainController.mainWindow.emit(QtCore.SIGNAL(u"dataChanged__latentObjects"))
+    _dictSetCallbacks.addCallback(u"xy_temp", set__xy_temp)   
+    xy_temp = property(get__xy_temp, set__xy_temp)    
+        
 ## Class for variable Elements
 
 class  PX_PlottableVarElement(PX_PlottableElement):
@@ -709,7 +745,7 @@ class  PX_PlottableVarElement(PX_PlottableElement):
             raise Exception(u"Error PX_PlottableVarElement.__init__: Name None not allowed!")
         
         tupleInPins  = ((0,u""),)
-        tupleOutPins = ((0,u""),)
+        tupleOutPins = ((0,u""),)    
         bRefName = (refName == None)
         if bRefName:
             bIdSuffix = True
@@ -719,6 +755,8 @@ class  PX_PlottableVarElement(PX_PlottableElement):
             name = refName
         super(PX_PlottableVarElement, self).__init__(parent, name, float(X), float(Y), value = value,\
                             tupleInPins = tupleInPins, tupleOutPins = tupleOutPins, bIdSuffix = bIdSuffix)
+        self._BContainer__Attributes[u"tupleInPins"]  = tupleInPins
+        self._BContainer__Attributes[u"tupleOutPins"] = tupleOutPins
         
         if not bRefName:
             self._BContainer__Attributes[u"DisplayName"] = displayName
@@ -728,8 +766,8 @@ class  PX_PlottableVarElement(PX_PlottableElement):
         self.__refObject = self.mainController.objectHandler.register(self)            
             
         self.__refObject._BContainer__Head = value 
-        self.set(u"tupleInPins", tupleInPins)
-        self.set(u"tupleOutPins", tupleOutPins)
+#         self.set(u"tupleInPins", tupleInPins)
+#         self.set(u"tupleOutPins", tupleOutPins)
         for attr in (u"StimulationFunction", u"listSelectedDispObj"):
             # very interesting error - attr = attr is necessary 
             self._dictSetCallbacks.addCallback(attr, lambda val, options, attr = attr: self.__refObject.set(attr, val, options))
@@ -921,16 +959,16 @@ class  PX_PlottableVarElement(PX_PlottableElement):
         PX_PlottableElement.plotBasicElement(self, paint, templ)
         __plotElementSpecifier()
         
-        mainController = self.getRoot()
-        bSimulationMode = mainController.bSimulationMode
-         
-        if bSimulationMode:
+        #mainController = self.getRoot()
+        #bSimulationMode = mainController.bSimulationMode
+        #bSimulationMode = self.mainController.bSimulationMode 
+        # 
+        #if bSimulationMode:
+        
+        if self.mainController.bSimulationMode:
 
-            #bStimulate = self.__refObject.get(u"bStimulate")
             bStimulate = self.__refObject.bStimulate
-            #bMeasure = self.__refObject.get(u"bMeasure")
             bMeasure = self.__refObject.bMeasure
-            #self.calcDimensions(bStimulate,bMeasure)
             self.calcDimensions(bStimulate,bMeasure)
             
             name = self.get(u"DisplayName")
@@ -1262,7 +1300,9 @@ class PX_PlottableBasicOperator(PX_PlottableElement):
 class PX_PlottableConnector(PX_PlottableIdObject):
 
     _dictSetCallbacks = copy.copy(PX_PlottableIdObject._dictSetCallbacks)   
-    _dictGetCallbacks = copy.copy(PX_PlottableIdObject._dictGetCallbacks) 
+    _dictGetCallbacks = copy.copy(PX_PlottableIdObject._dictGetCallbacks)
+    
+    penHighlight = QtGui.QPen(PX_Templ.color.Highlight,PX_Templ.Template.Gui.px_CONNECTOR_highlight(), QtCore.Qt.SolidLine)
     
     def __init__(self, parent, \
                  elem0_ID_phrase, \
@@ -1273,7 +1313,6 @@ class PX_PlottableConnector(PX_PlottableIdObject):
                  idxOutPinConnectorPloting = None):
         
         super(PX_PlottableConnector, self).__init__(parent, mainController, bIdSuffix = True)
-        
         
         #elem0_ID may also be a string of the element
         elem0_ID = self.get_ID_from_Phrase(elem0_ID_phrase)
@@ -1367,20 +1406,17 @@ class PX_PlottableConnector(PX_PlottableIdObject):
         elem1 = self.elem1
         self.X0 = elem0._X
         self.Y0 = elem0._Y
-        try:
-            self.X1 = elem1._X
-        except:
-            print "ERROR"
+        self.X1 = elem1._X
         self.Y1 = elem1._Y
         self.listOutPins0 = elem0.listOutPins
         self.listInPins1  = elem1.listInPins
         
-        self.listPoints = list(self.get(u"listPoints"))
+        self.listPointsTemp = list(self.get(u"listPoints"))
                 
         idxOutPin = self.idxOutPin
         idxInPin = self.idxInPin
         
-        len_listPoints = len(self.listPoints)
+        len_listPoints = len(self.listPointsTemp)
            
         self.outPin_x =  self.listOutPins0[ idxOutPin ][0]
         self.outPin_y =  self.listOutPins0[ idxOutPin ][1] 
@@ -1409,35 +1445,34 @@ class PX_PlottableConnector(PX_PlottableIdObject):
             if len_listPoints > 0:
                 # x-Values
                 if len_listPoints %2==0:
-                    pass
-                    self.listPoints[-1] = self.inPin_y + self.Y1 - self.Y0 
+                    self.listPointsTemp[-1] = self.inPin_y + self.Y1 - self.Y0 
                 # y-Values
                 else:
                     if len_listPoints > 1:
-                        if self.listPoints[-2] != self.outPin_y:
-                            self.listPoints.append(self.inPin_y + self.Y1 - self.Y0 )
+                        if self.listPointsTemp[-2] != self.outPin_y:
+                            self.listPointsTemp.append(self.inPin_y + self.Y1 - self.Y0 )
                     else:
                         if self.Y0 != self.Y1:
-                            self.listPoints.append(self.inPin_y + self.Y1 - self.Y0 )
+                            self.listPointsTemp.append(self.inPin_y + self.Y1 - self.Y0 )
                             
             else:
-                self.listPoints.append(self.inPin_x + self.X1 - self.X0 - self.rad )
-                self.listPoints.append(self.Y1 - self.Y0 +  self.inPin_y  )
+                self.listPointsTemp.append(self.inPin_x + self.X1 - self.X0 - self.rad )
+                self.listPointsTemp.append(self.Y1 - self.Y0 +  self.inPin_y  )
                             
         #Case no final connection
         else:
             if len_listPoints %2==0:
-                self.listPoints.append(self.X1 - self.X0 )
+                self.listPointsTemp.append(self.X1 - self.X0 )
             else:
-                self.listPoints.append(self.Y1 - self.Y0 + self.inPin_y )
+                self.listPointsTemp.append(self.Y1 - self.Y0 + self.inPin_y )
         
-        len_listPoints = len(self.listPoints)
+        len_listPoints = len(self.listPointsTemp)
         len_listPoints_minus_1 = len_listPoints - 1 
         
         #Case final connection
         if self.bNoFinalConnection == False:
-            self.set(u"listPoints", self.listPoints)
-        
+            self._BContainer__Attributes[u"listPoints"] = self.listPointsTemp
+            
         # Determining the shape of the connector
         # From the "Shape" the GUI knows where an object
         # is located. The "Shape" has not be the real 
@@ -1458,11 +1493,11 @@ class PX_PlottableConnector(PX_PlottableIdObject):
             x0 = x1_cache
             y0 = y1_cache
             if i%2 == 0:
-                x1 = self.listPoints[i] + self.X0
+                x1 = self.listPointsTemp[i] + self.X0
                 y1 = y1_cache
             else:
                 x1 = x1_cache
-                y1 = self.listPoints[i] + self.Y0
+                y1 = self.listPointsTemp[i] + self.Y0
             shape.append(self._PX_PlottableObject__getPolygon(x0,y0,x1,y1))
             x1_cache = x1
             y1_cache = y1
@@ -1489,9 +1524,11 @@ class PX_PlottableConnector(PX_PlottableIdObject):
         path    = QtGui.QPainterPath()
         path.moveTo(self.outPin_x + self.X0, self.outPin_y + self.Y0)
 
+        
+
         x1=0
         y1=0
-        listPoints = copy.copy(self.listPoints)
+        listPoints = copy.copy(self.listPointsTemp)
  
         
         # transforming the relative coordinates to absolute coordinates
@@ -1607,10 +1644,11 @@ class PX_PlottableConnector(PX_PlottableIdObject):
         
         paint.setBrush(PX_Templ.brush.transparent)
         
-        if bActive:
+        if bActive and not self.mainController.bSimulationMode:
             # Connector is highlighted
-            pen2 = QtGui.QPen(PX_Templ.color.Highlight,PX_Templ.Template.Gui.px_CONNECTOR_highlight(), QtCore.Qt.SolidLine) 
-            paint.setPen(pen2)
+            #pen2 = QtGui.QPen(PX_Templ.color.Highlight,PX_Templ.Template.Gui.px_CONNECTOR_highlight(), QtCore.Qt.SolidLine) 
+            #paint.setPen(pen2)
+            paint.setPen(PX_PlottableConnector.penHighlight)
             paint.drawPath(path) 
         
         pen  = QtGui.QPen(PX_Templ.color.black,PX_Templ.Template.Gui.px_CONNECTOR_line(), QtCore.Qt.SolidLine)    
@@ -1627,7 +1665,6 @@ class PX_PlottableConnector(PX_PlottableIdObject):
     _dictGetCallbacks.addCallback(u"connectInfo", get__connectInfo)
         
     def set__connectInfo(self, val, options = None):
-        #self.mainController.latentGraphics.set(u"bHasProxyElement", False)
         self.mainController.latentGraphics.bHasProxyElement = False
         objInFocus = self.mainController.activeFolder.getb(val[0])
         idxInPin = val[1]
@@ -1646,6 +1683,15 @@ class PX_PlottableConnector(PX_PlottableIdObject):
         self.mainController.set(u"bConnectorPloting", False, options)        
     _dictSetCallbacks.addCallback(u"connectInfo", set__connectInfo)
     connectInfo = property(get__connectInfo, set__connectInfo)    
+
+    def get__listPoints(self):
+        return self._BContainer__Attributes[u"listPoints"]
+    _dictGetCallbacks.addCallback(u"listPoints", get__listPoints )    
+    def set__listPoints(self, val, options = None):
+        self._BContainer__Attributes[u"listPoints"] = val
+        self.mainController.mainWindow.emit(QtCore.SIGNAL(u"dataChanged__coreDataObjects"))
+    _dictSetCallbacks.addCallback(u"listPoints", set__listPoints)
+    listPoints = property(get__listPoints , set__listPoints) 
     
 ## Class for highlightning
             
@@ -1657,11 +1703,11 @@ class PX_LatentPlottable_HighlightRect(PX_PlottableObject):
     def __init__(self, parent, X, Y, bIdSuffix=None):
         
         super(PX_LatentPlottable_HighlightRect, self).__init__(parent, u"HighlightObject", bIdSuffix = bIdSuffix)
-        self.set(u"bLatent", True)
-        self.set(u"X0", X)
-        self.set(u"Y0", Y)
-        self.set(u"X1", X)
-        self.set(u"Y1", Y)
+        self._BContainer__Attributes[u"bLatent"] = True
+        self._BContainer__Attributes[u"X0"] = X
+        self._BContainer__Attributes[u"Y0"] = Y
+        self._BContainer__Attributes[u"X1"] = X
+        self._BContainer__Attributes[u"Y1"] = Y        
         self.set(u"Name", u"HighlightObject")
         self.set(u"bVisible", True)
         self.set(u"bExitMethod", True)
@@ -1670,20 +1716,79 @@ class PX_LatentPlottable_HighlightRect(PX_PlottableObject):
         
     def plot(self, paint, templ):
         
-        X0 = self.get(u"X0")
-        Y0 = self.get(u"Y0")
-        X1 = self.get(u"X1")
-        Y1 = self.get(u"Y1")
+        X0 = self.X0
+        Y0 = self.Y0
+        X1 = self.X1
+        Y1 = self.Y1
         
         pen = QtGui.QPen(PX_Templ.color.Highlight,PX_Templ.Template.Gui.px_HIGHLIGHT_border(), QtCore.Qt.SolidLine)
         pen.setJoinStyle(QtCore.Qt.MiterJoin)
         paint.setPen(pen)
         paint.setBrush(PX_Templ.brush.HighlightTransp)
-        paint.drawRect(X0, Y0, X1-X0, Y1-Y0)
+        paint.drawRect(X0, Y0, X1 - X0, Y1 - Y0)
         
         
     def isInFocus(self, X, Y):
         return []
+    
+    # X0
+    def get__X0(self):
+        return self._BContainer__Attributes[u"X0"]
+    _dictGetCallbacks.addCallback(u"X0", get__X0 )      
+    
+    def set__X0(self, val, options = None):
+        self._BContainer__Attributes[u"X0"] = val
+        self.mainController.mainWindow.emit(QtCore.SIGNAL(u"dataChanged__latentObjects"))
+    _dictSetCallbacks.addCallback(u"X0", set__X0 )
+    X0 = property(get__X0, set__X0)
+
+    #Y0
+    def get__Y0(self):
+        return self._BContainer__Attributes[u"Y0"]
+    _dictGetCallbacks.addCallback(u"Y0", get__Y0 )      
+    
+    def set__Y0(self, val, options = None):
+        self._BContainer__Attributes[u"Y0"] = val
+        print self._BContainer__Attributes[u"Y0"]
+        self.mainController.mainWindow.emit(QtCore.SIGNAL(u"dataChanged__latentObjects"))
+    _dictSetCallbacks.addCallback(u"Y0", set__Y0 )
+    Y0 = property(get__Y0, set__Y0)    
+
+    #X1
+    def get__X1(self):
+        return self._BContainer__Attributes[u"X1"]
+    _dictGetCallbacks.addCallback(u"X1", get__X1 )      
+    
+    def set__X1(self, val, options = None):
+        self._BContainer__Attributes[u"X1"] = val
+        self.mainController.mainWindow.emit(QtCore.SIGNAL(u"dataChanged__latentObjects"))
+    _dictSetCallbacks.addCallback(u"X1", set__X1 )
+    X1 = property(get__X1, set__X1)
+        
+    #Y1
+    def get__Y1(self):
+        return self._BContainer__Attributes[u"Y1"]
+    _dictGetCallbacks.addCallback(u"Y1", get__Y1 )      
+    
+    def set__Y1(self, val, options = None):
+        self._BContainer__Attributes[u"Y1"] = val
+        self.mainController.mainWindow.emit(QtCore.SIGNAL(u"dataChanged__latentObjects"))
+    _dictSetCallbacks.addCallback(u"Y1", set__Y1 )
+    Y1 = property(get__Y1, set__Y1)
+    
+    #X1Y1
+    def get__X1Y1(self):
+        return (self._BContainer__Attributes[u"X1"], self._BContainer__Attributes[u"Y1"])
+    _dictGetCallbacks.addCallback(u"X1Y1", get__X1Y1 )      
+    
+    def set__X1Y1(self, val, options = None):
+        self._BContainer__Attributes[u"X1"] = val[0]
+        self._BContainer__Attributes[u"Y1"] = val[1]
+        self.mainController.mainWindow.emit(QtCore.SIGNAL(u"dataChanged__latentObjects"))
+    _dictSetCallbacks.addCallback(u"X1Y1", set__X1Y1 )
+    X1Y1 = property(get__X1Y1, set__X1Y1)
+
+
     
     def _exit_(self):
         

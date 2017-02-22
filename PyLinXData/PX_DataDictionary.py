@@ -10,7 +10,7 @@ from PyLinXData.BContainer import BDict
 class PX_DataDictionary(BDict):
     
     _dictSetCallbacks = copy.copy(BDict._dictSetCallbacks)
-    dictGetCallbacks = copy.copy(BDict._dictGetCallbacks)
+    _dictGetCallbacks = copy.copy(BDict._dictGetCallbacks)
 
     def __init__(self, parent):
         

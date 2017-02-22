@@ -6,14 +6,11 @@ Created on 18.08.2015
 
 # General Libraries - alphabedic order
 import copy
-#import ctypes 
 import inspect
-#import os
 from PyQt4 import QtGui, QtCore #, #uic, Qt
 import sys
 
 # Project specific Libraries - alphabedic order
-#from PyLinXData import * 
 import PX_Dialogue_SelectDataViewer
 import PX_Dialogue_SimpleStimulate
 import PX_Templates as PX_Templ
@@ -37,13 +34,11 @@ class DrawWidget (QtGui.QWidget):
         self.mainWindow = mainWindow
         self.setMouseTracking(True)
 
-        
         self.setFocus(QtCore.Qt.PopupFocusReason) 
         self.setFocusPolicy(QtCore.Qt.StrongFocus)
 
         # set button context menu policy
         self.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
-        
 
         # create context menu
         self.popMenu_SimulationMode = QtGui.QMenu(self)
@@ -60,8 +55,13 @@ class DrawWidget (QtGui.QWidget):
         self.setAcceptDrops(True)
         
         # Connecting signals       
-        self.connect(self, QtCore.SIGNAL('customContextMenuRequested(const QPoint&)'), self.on_context_menu)
-        self.connect(self, QtCore.SIGNAL("dataChanged__coreDataObjects"), self.repaint)
+        self.connect(self, QtCore.SIGNAL(u"customContextMenuRequested(const QPoint&)"), self.on_context_menu)
+        self.connect(self, QtCore.SIGNAL(u"dataChanged__objectHandler"), self.repaint)
+        self.connect(self, QtCore.SIGNAL(u"dataChanged__latentDataObjects"), self.repaint)
+        self.connect(self, QtCore.SIGNAL(u"dataChanged__coreDataObjects"), self.repaint)
+        self.connect(self, QtCore.SIGNAL(u"ctlChanged__tempDataObjectsData"), self.repaint)
+        self.mainWindow.connect(self.mainWindow, QtCore.SIGNAL(u"dataChanged__latentObjects"), self.repaint)
+        self.mainWindow.connect(self.mainWindow, QtCore.SIGNAL(u"dataChanged__coreDataObjects"), self.repaint)
         
     def sizeHint(self):
         maxXY = self.mainController.dimActiveGraphics
@@ -97,49 +97,79 @@ class DrawWidget (QtGui.QWidget):
             signal = e.mimeData().text()
             command = u"@objects set ./variables/"  + var.get(u"DisplayName") + u".signalMapped " + unicode(signal)
             self.mainController.execCommand(command)
-            self.repaint()
             self.emit(QtCore.SIGNAL(u"guiAction__drawWidget_dropped"))
-            
 
+
+    def getStimulationActivateCommand(self,var, values):
+        strValues = repr(values).replace(" ", "")
+        objPath = var.objPath
+        stimFunction = values[u"StimulationFunction"]
+        attributeToSet =  PX_Templ.PX_DiagData.StimAttribute[stimFunction ]
+        ustrExec =  u"set " + objPath[:-1] + u"." + attributeToSet + u" " + unicode(strValues)
+        return ustrExec
+    
+    def getMeasureCommand(self,var, values):
+        listSelectedDispObj_new = []
+        idx = self.mainController.get(u"idxLastSelectedDataViewer")
+        for key in values:
+            if u"bDataViewer_" in key:
+                if values[key]:
+                    listSelectedDispObj_new.append(int(key[12:]))
+        if values[u"bNewDataViewer"]:
+            execStr = u"new dataViewer 50 50"
+            newVarDispObj = self.mainController.execCommand(execStr)
+            idx = newVarDispObj.get(u"idxDataDispObj")
+            listSelectedDispObj_new.append(idx)
+        execStr = u"set " + var.objPath[:-1] + u".listSelectedDispObj " +\
+                unicode(repr(listSelectedDispObj_new).replace(u" ", u""))
+        return execStr
 
     def on_context_menu(self, coord):
+        
+        def showPopup(bStimulate, bMeasure):
+            self.actionMeasure.setChecked(bMeasure)
+            self.actionStimulate.setChecked(bStimulate)
+            self.popMenu_SimulationMode.exec_(self.mapToGlobal(coord))
+            actionMeasureIsChecked = self.actionMeasure.isChecked()
+            actionStimulateIsChecked = self.actionStimulate.isChecked()
+            return actionMeasureIsChecked, actionStimulateIsChecked
+            
         # show context menu
         var = self.__variableInSimMOde(coord)
         if var:
             bStimulate  = var.get(u"bStimulate")
             bMeasure    = var.get(u"bMeasure")
             
-            self.actionMeasure.setChecked(bMeasure)
-            self.actionStimulate.setChecked(bStimulate)
-            self.popMenu_SimulationMode.exec_(self.mapToGlobal(coord))
-            actionMeasureIsChecked = self.actionMeasure.isChecked()
-            actionStimulateIsChecked = self.actionStimulate.isChecked()
+            actionMeasureIsChecked, actionStimulateIsChecked = showPopup(bStimulate,bMeasure)
             
+            command = None
             if actionStimulateIsChecked and not bStimulate:
-                result = PX_Dialogue_SimpleStimulate.PX_Dialogue_SimpleStimulate.getParams(self, var,self.mainController, self)
-                if result == False:
-                    self.actionStimulate.setChecked(False)
-                    actionStimulateIsChecked = False
-            
+                OK, values = PX_Dialogue_SimpleStimulate.PX_Dialogue_SimpleStimulate.getParams(self, var,self.mainController, self)
+                if OK == True:
+                    self.actionStimulate.setChecked(True)
+                    command = self.getStimulationActivateCommand(var, values)
+            elif not actionStimulateIsChecked and bStimulate:
+                command = u"set " + var.objPath[:-1] + u".StimulationFunction None"
+                
             if actionMeasureIsChecked and not bMeasure:
-                result = PX_Dialogue_SelectDataViewer.PX_Dialogue_SelectDataViewer.getParams( self,var,self.mainController,self)
-                if result == False:
-                    self.actionMeasure.setChecked(False)
-                    actionMeasureIsChecked = False
-             
-            # TODO COMMAND ???
-            #var.set(u"bStimulate",actionStimulateIsChecked)
-            #var.getRefObject().set(u"bStimulate",actionStimulateIsChecked)
-                    
-                    self.repaint() 
+                OK, value = PX_Dialogue_SelectDataViewer.PX_Dialogue_SelectDataViewer.getParams( self,var,self.mainController,self)
+                if OK == True:
+                    self.actionMeasure.setChecked(True)
+                    command = self.getMeasureCommand(var, value)
+            elif not actionMeasureIsChecked and bMeasure:
+                command = u"set " + var.objPath[:-1] + u".listSelectedDispObj []"
+                                       
+            if command != None:
+                self.mainController.execCommand(command)
+            
 
     def newProject(self, mainController):
         self.rootGraphics   = mainController.root
         self.activeGraphics = mainController.activeFolder
         self.mainController = mainController
+        self.latentGraphics = mainController.latentGraphics
     
     def paintEvent(self, event = None):
-        #print "paintEvent"
         self.activeGraphics.write(self,PX_Templ.Plot_Target.Gui)
         self.latentGraphics.write(self,PX_Templ.Plot_Target.Gui)
         super(DrawWidget, self).paintEvent(event)
@@ -173,7 +203,6 @@ class DrawWidget (QtGui.QWidget):
                 command += " " + unicode(delItem)
                            
             self.mainController.execCommand(command)
-            self.repaint()
 
        
         #################
@@ -220,10 +249,8 @@ class DrawWidget (QtGui.QWidget):
             if len_objectsInFocus == 1:
                 activeObject = objInFocus[0]
                 if activeObject.isAttr(u"listPoints"):
-                    #listPoints = list(activeObject.get(u"listPoints"))
                     objectInFocus = objInFocus[0]
                     shape = objectInFocus.get(u"Shape")
-                    #elem0 = objectInFocus.elem0
                     idxPolygons = helper.point_inside_polygon(x, y, shape)
                     if len(idxPolygons) == 1:
                         idxPolygon = idxPolygons[0]
@@ -249,7 +276,7 @@ class DrawWidget (QtGui.QWidget):
                         if objInFocus != None:
                             if len(idxPin) == 1:
                                 idxPin = idxPin[0]
-                            break  
+                            break
                 
                 # case connecting of elements is not finished yet. No second Element has been clicked
                 if objInFocus == None:                    
@@ -283,14 +310,14 @@ class DrawWidget (QtGui.QWidget):
                             strCommand = u"@latent new connector " + unicode( element.ID ) + u" idxOutPinConnectorPloting=" + unicode(idxPin)
                             self.mainController.execCommand(strCommand)
 
-                                      
-        def mousePressEvent_tool_newVarElement():     
+
+
+        def mousePressEvent_tool_newVarElement():
             self.mainController.idxToolSelected = helper.ToolSelected.none
             self.mainWindow.ui.actionNewElement.setChecked(False)
             n = PyLinXCoreDataObjects.PX_IdObject._PX_IdObject__ID + 1
             ustrCommand = u"new varElement " + u"Variable_id" + unicode(n) + u" " + unicode(X) + u" " + unicode(Y) + u" " + unicode(15)
             self.mainController.execCommand(ustrCommand)             
-            self.mainWindow.ui.TabElements.repaint()
             
         def mousePressEvent_tool_newBasicOperator(ustrOperator):
             self.mainController.idxToolSelected = helper.ToolSelected.none
@@ -305,7 +332,6 @@ class DrawWidget (QtGui.QWidget):
             ustrCommand = u"new basicOperator " +  ustrOperator + " " + unicode(X) + " " + unicode(Y) 
             self.mainController.execCommand(ustrCommand)
 
-            
         def mousePressEvent_tool_newVarDispObj():
             self.mainController.idxToolSelected = helper.ToolSelected.none
             self.mainWindow.ui.actionOsci.setChecked(False)
@@ -321,10 +347,7 @@ class DrawWidget (QtGui.QWidget):
         y = coord.y()
         X = 10 * round( 0.1 * float(x))
         Y = 10 * round( 0.1 * float(y))
-        #toolSelected = self.mainController.get(u"idxToolSelected")
         toolSelected = self.mainController.idxToolSelected
-        #bSimulationMode = self.mainController.get(u"bSimulationMode")
-        #bSimulationMode = self.mainController.get(u"bSimulationMode")
         bSimulationMode = self.mainController.bSimulationMode
         
         # not passed as command since just clicking should not change the data
@@ -353,8 +376,6 @@ class DrawWidget (QtGui.QWidget):
 
             elif toolSelected == helper.ToolSelected.newDivision:
                 mousePressEvent_tool_newBasicOperator("/")
-            
-        self.repaint()
                    
     def mouseMoveEvent(self,coord):
 
@@ -362,7 +383,6 @@ class DrawWidget (QtGui.QWidget):
         y = coord.y()
         X = 10 * round( 0.1 * float(x))
         Y = 10 * round( 0.1 * float(y))
-        #toolSelected = self.mainController.get(u"idxToolSelected")
         toolSelected = self.mainController.idxToolSelected
 
         if toolSelected == helper.ToolSelected.none:
@@ -400,75 +420,36 @@ class DrawWidget (QtGui.QWidget):
                             ustrCommand = "set ./" + ConnectorToModify.get(u"Name") + ".listPoints " + repr(listPoints).replace(" ", "")
                             self.mainController.execCommand(ustrCommand)
                     
-                    self.mainController.set(u"px_mousePressedAt_X", X)
-                    self.mainController.set(u"px_mousePressedAt_Y", Y)
-                
+                    self.mainController.set(u"px_mousePressedAt_XY", (X,Y))
+
             # Ploting the selection frame
             if self.latentGraphics.isInBody(u"HighlightObject"):
                 highlightObject = self.latentGraphics.getb(u"HighlightObject")
-                highlightObject.set(u"X1", coord.x())
-                highlightObject.set(u"Y1", coord.y())
+                highlightObject.X1Y1 = (coord.x(),coord.y())
                     
             # change coordinates of the proxyElement, that is a placeholder for the finally connected element
             if self.mainController.bConnectorPloting:
                 proxyElem = self.mainController.latentGraphics.getb(u"PX_PlottableProxyElement")
-                proxyElem.X = X
-                proxyElem.Y = Y
-
-            self.repaint()
+                proxyElem.xy_temp = (X,Y)
      
     def mouseReleaseEvent(self,coord):
-
-        def __mouseReleaseEvent_ToolSelNone():
-            
-            X = coord.x()
-            Y = coord.y()
-            px_mousePressedAt_X = self.mainController.get(u"px_mousePressedAt_X")
-            px_mousePressedAt_Y = self.mainController.get(u"px_mousePressedAt_Y")
-            objectsInFocus = []   
-            if px_mousePressedAt_X != sys.maxint and px_mousePressedAt_Y != sys.maxint: 
-                polygons = [[(X,Y), (X,px_mousePressedAt_Y ), (px_mousePressedAt_X,px_mousePressedAt_Y),(px_mousePressedAt_X,Y)]]
-                keys = self.activeGraphics.getChildKeys()  
-                for key in keys:
-                    element = self.activeGraphics.getb(key)
-                    if element.isAttr(u"Shape"):
-                        bFocus = True
-                        shape = element.get(u"Shape")
-
-                        for polygon in shape:
-                            if polygon != None:
-                                for point in polygon:
-                                    idxCorner = helper.point_inside_polygon(point[0], point[1],polygons)
-                                    if len(idxCorner) == 0:
-                                        bFocus = False
-                        if bFocus:
-                            if element.get(u"bUnlock"):
-                                objectsInFocus.append(element)
-            
-            command = u"select "
-            for element in objectsInFocus:
-                command += ( element.get("Name") + u" ")
-            if len(objectsInFocus) > 0:
-                self.mainController.execCommand(command)
-  
-
         
-        keys = self.latentGraphics.getChildKeys()       
-        #toolSelected = self.mainController.get(u"idxToolSelected")        
+        def __removeLatentObjects():
+            keys = self.latentGraphics.getChildKeys()
+            for key in keys:
+                if self.latentGraphics.getb(key).isAttrTrue(u"bLatent"):
+                    self.latentGraphics.delete(key)
+            self.repaint() # latent objects are not part of the data
+
         toolSelected = self.mainController.idxToolSelected
 
         # selecting Elements
         if toolSelected == helper.ToolSelected.none:
-            __mouseReleaseEvent_ToolSelNone()
-            
-            for key in keys:
-                if self.latentGraphics.getb(key).isAttrTrue(u"bLatent"):
-                    self.latentGraphics.delete(key)
+            #__mouseReleaseEvent_ToolSelNone()
+            __removeLatentObjects()
              
         self.mainController.set(u"px_mousePressedAt_X", sys.maxint)
         self.mainController.set(u"px_mousePressedAt_Y", sys.maxint)  
-
-        self.repaint()
            
     def mouseDoubleClickEvent(self, coord):
         
@@ -484,7 +465,6 @@ class DrawWidget (QtGui.QWidget):
         if not self.mainController.bSimulationMode:
             if self.mainController.get(u"bConnectorPloting"):
                 self.mainController.execCommand("set /.bConnectorPloting False")
-                self.repaint()
                 
         else:
             X = coord.x()
@@ -507,13 +487,22 @@ class DrawWidget (QtGui.QWidget):
                         break
             
             if bFocusStimulate:
-                PX_Dialogue_SimpleStimulate.PX_Dialogue_SimpleStimulate.getParams(self, element, self.mainController,self)
-                return 
+                OK, values = PX_Dialogue_SimpleStimulate.PX_Dialogue_SimpleStimulate.getParams(self, element, self.mainController,self)
+                if OK == True:
+                    self.actionStimulate.setChecked(True)
+                    command = self.getStimulationActivateCommand(element, values)
+                    self.mainController.execCommand(command)                
+                return
+            
             if bFocusMeasure:
-                PX_Dialogue_SelectDataViewer.PX_Dialogue_SelectDataViewer.getParams(self,element,self.mainController,self)
+                OK, value = PX_Dialogue_SelectDataViewer.PX_Dialogue_SelectDataViewer.getParams(self,element,self.mainController,self)
+                if OK == True:
+                    self.actionMeasure.setChecked(True)
+                    command = self.getMeasureCommand(element, value)
+                    self.mainController.execCommand(command)    
                 return 
             
             if bFocus:
                 if PyLinXCoreDataObjects.PX_PlottableVarDispElement in types:
-                    # TODO COMMAND
+                    # TODO COMMAND ???
                     element.set(u"bVarDispVisible", True)                 

@@ -15,19 +15,13 @@ class PX_Dialogue_SimpleStimulate(QtGui.QDialog):
     def __init__(self, parent, variable, mainController, drawWidget):
         
         super(PX_Dialogue_SimpleStimulate, self).__init__(parent)
-        #self.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint)
         
         layout = QtGui.QVBoxLayout(self)
-        
-        #StimulationFunction = variable.get(u"StimulationFunction")
-        #if StimulationFunction == None:
-        #    StimulationFunction = u"Constant"
 
         self.stimFunction  = variable.get(u"StimulationFunction")
         if self.stimFunction  == None:
             self.stimFunction  = u"Constant"
        
-        #init_list = copy.deepcopy(PX_Templ.PX_DiagData.StimForm[StimulationFunction])
         init_list = copy.deepcopy(PX_Templ.PX_DiagData.StimForm[ self.stimFunction ])
         # Get Data 
         for dictVar in init_list:
@@ -39,7 +33,6 @@ class PX_Dialogue_SimpleStimulate(QtGui.QDialog):
             dictVar[u"Value"] = unicode(value)
         self.setLayout(layout)
         self.variable = variable
-        #self.stimFunction = self.variable.get(u"StimulationFunction")
         self.drawWidget = drawWidget
         self.mainController = mainController
         
@@ -69,26 +62,20 @@ class PX_Dialogue_SimpleStimulate(QtGui.QDialog):
         self.buttons.rejected.connect(self.on_reject)
         self.layout().addWidget(self.buttons)
         self.result = False
+        self.command = None
         
     def on_reject(self):
         self.hide()
         
     def on_accept(self):
         try:
-            values = self.formWidget.getValues()
+            self.values = self.formWidget.getValues()
             self.result = True
         except:
             helper.error(u"Invalid Input! Please Try again!")
             self.result = False
             return 
-        values[u"StimulationFunction"] = self.stimFunction
-        strValues = repr(values).replace(" ", "")
-        objPath = self.variable.objPath
-        #stimFunction = self.variable.get(u"StimulationFunction")
-        print self.stimFunction
-        attributeToSet =  PX_Templ.PX_DiagData.StimAttribute[self.stimFunction]
-        ustrExec2 =  u"set " + objPath[:-1] + u"." + attributeToSet + u" " + unicode(strValues)
-        self.mainController.execCommand(ustrExec2)
+        self.values[u"StimulationFunction"] = self.stimFunction
         self.hide()
     
     def onActivated(self, text):
@@ -108,6 +95,7 @@ class PX_Dialogue_SimpleStimulate(QtGui.QDialog):
     @staticmethod
     def getParams(parent, variable, mainController, drawWidget):
         dialog = PX_Dialogue_SimpleStimulate(parent, variable, mainController, drawWidget)
-        result = dialog.exec_()
-        drawWidget.repaint() 
-        return dialog.result
+        #result = dialog.exec_()
+        dialog.exec_()
+        #drawWidget.repaint() 
+        return dialog.result, dialog.values

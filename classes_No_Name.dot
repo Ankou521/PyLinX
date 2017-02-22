@@ -1,0 +1,5 @@
+digraph "classes_No_Name" {
+charset="utf-8"
+rankdir=BT
+"2" [shape="record", label="{PyLinXMain|mainController : PyLinXProjectController\lrunEngine : NoneType\lstopRunEvent : _Event\lrepaintEvent : _Event\lui\lrunThreadMessageQueue : Queue\l|get_DrawWidgetSize()\lon_actionSave()\lon_actionNewProject()\lon_actionSave_As()\lon_actionNewMultiplication()\lon_actionNewDivision()\lon_run()\lcloseApplication()\lon_actionNewMinus()\lon_actionNewElement()\lon_Activate_Simulation_Mode()\lon_actionNewPlus()\lon_stop()\lon_actionLoadProject()\l}"];
+}

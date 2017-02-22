@@ -1,0 +1,340 @@
+************* Module PyLinX2.__init__
+W:313, 0: TODO: should be removed in the long term (fixme)
+C: 59, 0: Line too long (97/80) (line-too-long)
+C: 86, 0: Line too long (109/80) (line-too-long)
+C: 93, 0: Line too long (101/80) (line-too-long)
+C: 98, 0: Line too long (136/80) (line-too-long)
+C:100, 0: Line too long (124/80) (line-too-long)
+C:101, 0: Line too long (139/80) (line-too-long)
+C:103, 0: Line too long (100/80) (line-too-long)
+C:104, 0: Line too long (135/80) (line-too-long)
+C:106, 0: Line too long (82/80) (line-too-long)
+C:107, 0: Line too long (141/80) (line-too-long)
+C:110, 0: Line too long (94/80) (line-too-long)
+C:137, 0: Line too long (116/80) (line-too-long)
+C:158, 0: Line too long (90/80) (line-too-long)
+C:166, 0: Line too long (98/80) (line-too-long)
+C:180, 0: Line too long (120/80) (line-too-long)
+C:181, 0: Line too long (112/80) (line-too-long)
+C:214, 0: Line too long (91/80) (line-too-long)
+C:215, 0: Line too long (83/80) (line-too-long)
+C:221, 0: Line too long (89/80) (line-too-long)
+C:222, 0: Line too long (96/80) (line-too-long)
+C:224, 0: Line too long (87/80) (line-too-long)
+C:228, 0: Line too long (89/80) (line-too-long)
+C:229, 0: Line too long (90/80) (line-too-long)
+C:231, 0: Line too long (87/80) (line-too-long)
+C:235, 0: Line too long (89/80) (line-too-long)
+C:236, 0: Line too long (91/80) (line-too-long)
+C:238, 0: Line too long (87/80) (line-too-long)
+C:242, 0: Line too long (89/80) (line-too-long)
+C:243, 0: Line too long (100/80) (line-too-long)
+C:245, 0: Line too long (87/80) (line-too-long)
+C:249, 0: Line too long (89/80) (line-too-long)
+C:250, 0: Line too long (94/80) (line-too-long)
+C:252, 0: Line too long (87/80) (line-too-long)
+C:270, 0: Line too long (109/80) (line-too-long)
+C:271, 0: Line too long (98/80) (line-too-long)
+C:298, 0: Line too long (141/80) (line-too-long)
+C:312, 0: Line too long (97/80) (line-too-long)
+C:324, 0: Line too long (89/80) (line-too-long)
+C:337, 0: Line too long (89/80) (line-too-long)
+C:339, 0: Line too long (88/80) (line-too-long)
+C:345, 0: Line too long (89/80) (line-too-long)
+************* Module PyLinX2
+W: 19, 0: Relative import 'PyLinXData', should be 'PyLinX2.PyLinXData' (relative-import)
+W: 20, 0: Relative import 'PyLinXData.PyLinXHelper', should be 'PyLinX2.PyLinXData.PyLinXHelper' (relative-import)
+W: 21, 0: Relative import 'PyLinXData.PX_Signals', should be 'PyLinX2.PyLinXData.PX_Signals' (relative-import)
+W: 22, 0: Relative import 'PyLinXData.PX_DataDictionary', should be 'PyLinX2.PyLinXData.PX_DataDictionary' (relative-import)
+W: 23, 0: Relative import 'PyLinXGui', should be 'PyLinX2.PyLinXGui' (relative-import)
+W: 23, 0: Wildcard import PyLinXGui (wildcard-import)
+W: 24, 0: Relative import 'PyLinXCompiler', should be 'PyLinX2.PyLinXCompiler' (relative-import)
+W: 24, 0: Wildcard import PyLinXCompiler (wildcard-import)
+W: 25, 0: Relative import 'PyLinXGui.PX_Templates', should be 'PyLinX2.PyLinXGui.PX_Templates' (relative-import)
+W: 26, 0: Relative import 'PyLinXGui.PX_TabWidget_main', should be 'PyLinX2.PyLinXGui.PX_TabWidget_main' (relative-import)
+W: 27, 0: Relative import 'PyLinXGui.PX_Tab_SignalSelect', should be 'PyLinX2.PyLinXGui.PX_Tab_SignalSelect' (relative-import)
+W: 28, 0: Relative import 'PyLinXGui.PX_Tab_Recorder', should be 'PyLinX2.PyLinXGui.PX_Tab_Recorder' (relative-import)
+W: 29, 0: Relative import 'PyLinXData.PyLinXHelper', should be 'PyLinX2.PyLinXData.PyLinXHelper' (relative-import)
+W: 29, 0: Reimport 'PyLinXData.PyLinXHelper' (imported line 20) (reimported)
+W: 30, 0: Relative import 'PyLinXCtl', should be 'PyLinX2.PyLinXCtl' (relative-import)
+W: 33, 0: Relative import 'PyLinXGui.PX_Tab_ObjectHandlerList', should be 'PyLinX2.PyLinXGui.PX_Tab_ObjectHandlerList' (relative-import)
+C: 59, 8: Invalid attribute name "mainController" (invalid-name)
+C: 65, 8: Invalid attribute name "runEngine" (invalid-name)
+C: 69, 8: Invalid attribute name "stopRunEvent" (invalid-name)
+C: 70, 8: Invalid attribute name "repaintEvent" (invalid-name)
+C: 44, 8: Invalid attribute name "ui" (invalid-name)
+C: 50, 8: Invalid attribute name "runThreadMessageQueue" (invalid-name)
+C: 36, 0: Missing class docstring (missing-docstring)
+C: 43, 8: Invalid variable name "uiString" (invalid-name)
+E: 47, 8: Module 'sys' has no 'setdefaultencoding' member (no-member)
+C: 61, 8: Invalid variable name "_rootGraphics" (invalid-name)
+E: 61,24: Instance of 'PyLinXProjectController' has no 'getb' member (but some types could not be inferred) (maybe-no-member)
+C: 98, 8: Comma not followed by a space
+        self.ui.TabWidget.adjoinTab(self.ui.TabInfo, u"Info", PX_TabWidget_main.PX_TabWidget_main.DisplayRole.inEditAndSimulationMode,1)
+                                                                                                                                     ^^ (no-space-after-comma)
+C:101, 8: Comma not followed by a space
+        self.ui.TabWidget.adjoinTab(self.ui.TabSignals, u"Signals", PX_TabWidget_main.PX_TabWidget_main.DisplayRole.onlyInSimulationMode,2)
+                                                                                                                                        ^^ (no-space-after-comma)
+C:104, 8: Comma not followed by a space
+        self.ui.TabWidget.adjoinTab(self.ui.TabElements, u"Elements", PX_TabWidget_main.PX_TabWidget_main.DisplayRole.onlyInEditMode,3)
+                                                                                                                                    ^^ (no-space-after-comma)
+C:107, 8: Comma not followed by a space
+        self.ui.TabWidget.adjoinTab(self.ui.Tabrecorder, u"Recorder", PX_TabWidget_main.PX_TabWidget_main.DisplayRole.onlyInSimulationMode,4)
+                                                                                                                                          ^^ (no-space-after-comma)
+C:116, 8: Comma not followed by a space
+        self.ui.splitter1.setStretchFactor(1,4)
+                                            ^^ (no-space-after-comma)
+C:117, 8: Comma not followed by a space
+        self.ui.splitter1.setStretchFactor(0,1)
+                                            ^^ (no-space-after-comma)
+C:137, 8: Comma not followed by a space
+        self.connect(self.ui.drawWidget, QtCore.SIGNAL(u"guiAction__drawWidget_dropped"),self.ui.TabSignals.repaint)
+                                                                                        ^^ (no-space-after-comma)
+C:199, 8: Comma not followed by a space
+        self.ui.resize(800,600)
+                          ^^ (no-space-after-comma)
+W: 61, 8: Unused variable '_rootGraphics' (unused-variable)
+W:184, 8: Unused variable 'script' (unused-variable)
+R: 38, 4: Too many statements (63/50) (too-many-statements)
+C:206, 4: Invalid method name "get_DrawWidgetSize" (invalid-name)
+C:206, 4: Missing method docstring (missing-docstring)
+C:212, 4: Invalid method name "closeApplication" (invalid-name)
+C:212, 4: Missing method docstring (missing-docstring)
+R:212, 4: Method could be a function (no-self-use)
+C:219, 4: Invalid method name "on_actionNewElement" (invalid-name)
+C:219, 4: Missing method docstring (missing-docstring)
+E:221,11: Instance of 'PyLinXProjectController' has no 'get' member (but some types could not be inferred) (maybe-no-member)
+E:222,12: Instance of 'PyLinXProjectController' has no 'set' member (but some types could not be inferred) (maybe-no-member)
+E:224,12: Instance of 'PyLinXProjectController' has no 'set' member (but some types could not be inferred) (maybe-no-member)
+C:226, 4: Invalid method name "on_actionNewPlus" (invalid-name)
+C:226, 4: Missing method docstring (missing-docstring)
+E:228,11: Instance of 'PyLinXProjectController' has no 'get' member (but some types could not be inferred) (maybe-no-member)
+E:229,12: Instance of 'PyLinXProjectController' has no 'set' member (but some types could not be inferred) (maybe-no-member)
+E:231,12: Instance of 'PyLinXProjectController' has no 'set' member (but some types could not be inferred) (maybe-no-member)
+C:233, 4: Invalid method name "on_actionNewMinus" (invalid-name)
+C:233, 4: Missing method docstring (missing-docstring)
+E:235,11: Instance of 'PyLinXProjectController' has no 'get' member (but some types could not be inferred) (maybe-no-member)
+E:236,12: Instance of 'PyLinXProjectController' has no 'set' member (but some types could not be inferred) (maybe-no-member)
+E:238,12: Instance of 'PyLinXProjectController' has no 'set' member (but some types could not be inferred) (maybe-no-member)
+C:240, 4: Invalid method name "on_actionNewMultiplication" (invalid-name)
+C:240, 4: Missing method docstring (missing-docstring)
+E:242,11: Instance of 'PyLinXProjectController' has no 'get' member (but some types could not be inferred) (maybe-no-member)
+E:243,12: Instance of 'PyLinXProjectController' has no 'set' member (but some types could not be inferred) (maybe-no-member)
+E:245,12: Instance of 'PyLinXProjectController' has no 'set' member (but some types could not be inferred) (maybe-no-member)
+C:247, 4: Invalid method name "on_actionNewDivision" (invalid-name)
+C:247, 4: Missing method docstring (missing-docstring)
+E:249,11: Instance of 'PyLinXProjectController' has no 'get' member (but some types could not be inferred) (maybe-no-member)
+E:250,12: Instance of 'PyLinXProjectController' has no 'set' member (but some types could not be inferred) (maybe-no-member)
+E:252,12: Instance of 'PyLinXProjectController' has no 'set' member (but some types could not be inferred) (maybe-no-member)
+C:255, 4: Invalid method name "on_actionSave" (invalid-name)
+C:255, 4: Missing method docstring (missing-docstring)
+C:256, 8: Invalid variable name "rootGraphics" (invalid-name)
+E:256,23: Instance of 'PyLinXProjectController' has no 'getb' member (but some types could not be inferred) (maybe-no-member)
+C:258,12: Invalid variable name "strSavePath" (invalid-name)
+C:264, 4: Invalid method name "on_actionSave_As" (invalid-name)
+C:264, 4: Missing method docstring (missing-docstring)
+E:265,11: Instance of 'PyLinXProjectController' has no 'isAttr' member (but some types could not be inferred) (maybe-no-member)
+C:266,12: Invalid variable name "strSavePath_old" (invalid-name)
+E:266,30: Instance of 'PyLinXProjectController' has no 'get' member (but some types could not be inferred) (maybe-no-member)
+C:267,13: Invalid variable name "strPath" (invalid-name)
+C:267,22: Invalid variable name "strSavePath_old_file" (invalid-name)
+C:269,12: Invalid variable name "strPath" (invalid-name)
+C:270, 8: Operator not preceded by a space
+        strSavePath= PyLinXHelper.showFileSelectionDialog(self.ui,strPath, bDir = False, strExt = u"*.pyp", \
+                   ^
+                                                    strHeader =u"Select File to save Project...",\
+                                                    dialogType = u"save",\
+                                                    bFileObject = False) (no-space-before-operator)
+C:270, 8: Invalid variable name "strSavePath" (invalid-name)
+C:274, 8: Comma not followed by a space
+        (strSavePath_base,strSavePath_ext) = os.path.splitext(strSavePath)
+                         ^^ (no-space-after-comma)
+C:274, 9: Invalid variable name "strSavePath_base" (invalid-name)
+C:274,26: Invalid variable name "strSavePath_ext" (invalid-name)
+C:276,12: Invalid variable name "strSavePath" (invalid-name)
+W:267,22: Unused variable 'strSavePath_old_file' (unused-variable)
+C:280, 4: Invalid method name "__saveProject" (invalid-name)
+C:280, 4: Invalid argument name "strSavePath" (invalid-name)
+C:280, 4: Missing method docstring (missing-docstring)
+C:284, 8: Invalid variable name "listCommands" (invalid-name)
+C:285, 8: Invalid variable name "strCommands" (invalid-name)
+C:287,12: Invalid variable name "strCommands" (invalid-name)
+C:288,12: Invalid variable name "strCommands" (invalid-name)
+C:291, 8: Invalid variable name "rootGraphics" (invalid-name)
+E:291,23: Instance of 'PyLinXProjectController' has no 'getb' member (but some types could not be inferred) (maybe-no-member)
+C:295, 4: Invalid method name "on_actionLoadProject" (invalid-name)
+C:295, 4: Missing method docstring (missing-docstring)
+C:297, 8: Invalid variable name "strPath" (invalid-name)
+C:298, 8: Comma not followed by a space
+        _file, strSavePath = PyLinXHelper.showFileSelectionDialog(self.ui,strPath, bDir = False,strHeader ="Select File to load Project...",\
+                                                                         ^^
+                                                     strExt = u"*.pyp",\
+                                                     dialogType = u"load") (no-space-after-comma)
+C:298,15: Invalid variable name "strSavePath" (invalid-name)
+C:304, 8: Invalid variable name "rootGraphics" (invalid-name)
+E:304,23: Instance of 'PyLinXProjectController' has no 'getb' member (but some types could not be inferred) (maybe-no-member)
+C:307, 4: Invalid method name "__loadFile" (invalid-name)
+C:307, 4: Missing method docstring (missing-docstring)
+C:311, 8: Invalid variable name "old_Controller" (invalid-name)
+E:319, 8: Instance of 'PyLinXProjectController' has no 'delete' member (but some types could not be inferred) (maybe-no-member)
+C:323, 4: Invalid method name "on_actionNewProject" (invalid-name)
+C:323, 4: Missing method docstring (missing-docstring)
+C:324, 8: Invalid variable name "rootGraphicsNew" (invalid-name)
+E:324,26: Undefined variable 'PyLinXCoreDataObjects' (undefined-variable)
+E:325, 8: Instance of 'PyLinXProjectController' has no 'delete' member (but some types could not be inferred) (maybe-no-member)
+E:326, 8: Instance of 'PyLinXProjectController' has no 'paste' member (but some types could not be inferred) (maybe-no-member)
+C:333, 4: Invalid method name "on_Activate_Simulation_Mode" (invalid-name)
+C:333, 4: Missing method docstring (missing-docstring)
+C:335, 8: Invalid variable name "bSimulationMode" (invalid-name)
+C:342, 4: Missing method docstring (missing-docstring)
+E:344,25: Instance of 'PyLinXProjectController' has no 'getb' member (but some types could not be inferred) (maybe-no-member)
+C:348, 4: Missing method docstring (missing-docstring)
+C:352, 0: Missing function docstring (missing-docstring)
+W:354, 4: Unused variable 'obj' (unused-variable)
+
+
+Report
+======
+185 statements analysed.
+
+Duplication
+-----------
+
++-------------------------+------+---------+-----------+
+|                         |now   |previous |difference |
++=========================+======+=========+===========+
+|nb duplicated lines      |0     |0        |=          |
++-------------------------+------+---------+-----------+
+|percent duplicated lines |0.000 |0.000    |=          |
++-------------------------+------+---------+-----------+
+
+
+
+Raw metrics
+-----------
+
++----------+-------+------+---------+-----------+
+|type      |number |%     |previous |difference |
++==========+=======+======+=========+===========+
+|code      |214    |69.93 |214      |=          |
++----------+-------+------+---------+-----------+
+|docstring |5      |1.63  |5        |=          |
++----------+-------+------+---------+-----------+
+|comment   |45     |14.71 |45       |=          |
++----------+-------+------+---------+-----------+
+|empty     |42     |13.73 |42       |=          |
++----------+-------+------+---------+-----------+
+
+
+
+External dependencies
+---------------------
+::
+
+    PyLinX2 
+      \-PyLinXCtl 
+      | \-PyLinXProjectController (PyLinX2)
+      \-PyLinXData (PyLinX2)
+      | \-PX_DataDictionary (PyLinX2)
+      | \-PX_Signals (PyLinX2)
+      | \-PyLinXHelper (PyLinX2)
+      \-PyLinXGui 
+        \-PX_TabWidget_main (PyLinX2)
+        \-PX_Tab_ObjectHandlerList (PyLinX2)
+        \-PX_Tab_Recorder (PyLinX2)
+        \-PX_Tab_SignalSelect (PyLinX2)
+        \-PX_Templates (PyLinX2)
+    PyQt4 
+      \-Qt (PyLinX2)
+      \-QtCore (PyLinX2)
+      | \-pyqtSignal (PyLinX2)
+      \-QtGui (PyLinX2)
+      \-uic (PyLinX2)
+    Queue (PyLinX2)
+    cProfile (PyLinX2)
+    codecs (PyLinX2)
+    copy (PyLinX2)
+    ctypes (PyLinX2)
+    inspect (PyLinX2)
+    os (PyLinX2)
+    threading (PyLinX2)
+
+
+
+Messages by category
+--------------------
+
++-----------+-------+---------+-----------+
+|type       |number |previous |difference |
++===========+=======+=========+===========+
+|convention |114    |114      |=          |
++-----------+-------+---------+-----------+
+|refactor   |2      |2        |=          |
++-----------+-------+---------+-----------+
+|warning    |21     |21       |=          |
++-----------+-------+---------+-----------+
+|error      |27     |27       |=          |
++-----------+-------+---------+-----------+
+
+
+
+Messages
+--------
+
++-----------+------------+
+|message id |occurrences |
++===========+============+
+|C0103      |44          |
++-----------+------------+
+|C0301      |41          |
++-----------+------------+
+|E1103      |25          |
++-----------+------------+
+|C0111      |18          |
++-----------+------------+
+|W0403      |13          |
++-----------+------------+
+|C0324      |10          |
++-----------+------------+
+|W0612      |4           |
++-----------+------------+
+|W0401      |2           |
++-----------+------------+
+|W0511      |1           |
++-----------+------------+
+|W0404      |1           |
++-----------+------------+
+|R0915      |1           |
++-----------+------------+
+|R0201      |1           |
++-----------+------------+
+|E1101      |1           |
++-----------+------------+
+|E0602      |1           |
++-----------+------------+
+|C0322      |1           |
++-----------+------------+
+
+
+
+Global evaluation
+-----------------
+Your code has been rated at -4.70/10 (previous run: -4.70/10, +0.00)
+
+Statistics by type
+------------------
+
++---------+-------+-----------+-----------+------------+---------+
+|type     |number |old number |difference |%documented |%badname |
++=========+=======+===========+===========+============+=========+
+|module   |1      |1          |=          |100.00      |0.00     |
++---------+-------+-----------+-----------+------------+---------+
+|class    |1      |1          |=          |0.00        |0.00     |
++---------+-------+-----------+-----------+------------+---------+
+|method   |17     |17         |=          |5.88        |82.35    |
++---------+-------+-----------+-----------+------------+---------+
+|function |1      |1          |=          |0.00        |0.00     |
++---------+-------+-----------+-----------+------------+---------+
+
+
+

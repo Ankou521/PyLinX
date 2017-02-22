@@ -14,5 +14,6 @@
 
 <pydev_pathproperty name="org.python.pydev.PROJECT_EXTERNAL_SOURCE_PATH">
 <path>C:\Python27\Lib\site-packages\PySide-1.2.2-cp27\PySide</path>
+<path>C:\Python27\Lib\site-packages\mdfreader</path>
 </pydev_pathproperty>
 </pydev_project>

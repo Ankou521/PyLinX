@@ -311,6 +311,8 @@ class PX_CodeAnalyser(BContainer.BContainer, QtCore.QObject):
 
     def __runInit(self):
         
+        print "RUN INIT"
+        
         self.delta_t = 0.02
         self.t = - self.delta_t
         self.__RunConfigDictionary[u"t"] = self.t
