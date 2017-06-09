@@ -20,7 +20,7 @@ class Code(BList):
         
     def appendLine(self, stri):
         
-        Code = self.__nIndent * u"    "
+        Code = self.__nIndent * u"    "   
         Code += stri
         self.append(Code)
                 

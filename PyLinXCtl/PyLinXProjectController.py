@@ -3,7 +3,6 @@ Created on 19.08.2015
 
 @author: Waetzold Plaum
 '''
-#import inspect
 import sys
 from PyQt4 import QtGui, QtCore
 import copy

@@ -121,7 +121,6 @@ class PX_Signals (PyLinXCoreDataObjects.PX_IdObject):
     
     def __init__(self, parent, path):
         
-        print "path", path
         dataObject = mdfreader.mdf(path)
         fileType = PX_Signals.fileType.mdf
         
@@ -151,7 +150,10 @@ class PX_Signals (PyLinXCoreDataObjects.PX_IdObject):
         
         self._BContainer__Attributes[u"pathMdfFile"] = path
         for key in self._BContainer__Head:
-            self._dictGetCallbacks.addCallback(key, lambda: self.get_signal(key))
+            # Interesting Python-Syntax: Wrong:             
+            # lambdaExpression = lambda key: self.get_signal(key)            
+            lambdaExpression = lambda value = key: self.get_signal(value)  
+            self._dictGetCallbacks.addCallback(key, lambdaExpression)
         self.__projectController = parent.getRoot(PyLinXCtl.PyLinXProjectController.PyLinXProjectController)      
         
         self.__projectController.mainWindow.emit(QtCore.SIGNAL(u"dataChanged__signals"))
@@ -192,6 +194,7 @@ class PX_Signals (PyLinXCoreDataObjects.PX_IdObject):
                     signalDict[u"ylabel"] = signalName
                 else: 
                     signalDict[u"ylabel"] = signalName + u" [" + self._BContainer__Head.getChannelUnit(signalName) + u"]"
+        #print "signalDict: ", signalDict
         return signalDict
     
     def __get_signal_csv(self, signalName):

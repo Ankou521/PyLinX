@@ -78,6 +78,7 @@ class PX_Tab_SignalSelect_TreeView(QtGui.QTreeView):
 
         self.bDoubleClicked = True
         labelName = self.__getLabelName()
+        #print "labelName ", labelName
         if labelName:
             self.emit(QtCore.SIGNAL("guiAction__plotSignal"), labelName )
                         
@@ -292,7 +293,9 @@ class PX_Tab_SignalSelect(QtGui.QWidget):
         if u"|" in labelName:
             listLabelName = labelName.split(u"|")
             path = u"/signalFiles/" + listLabelName[1] + u"." + listLabelName[0]
+            print "path ", path
             signal = self.mainController.get(path)
+            print "signal ", signal
             
             if (u"xlabel" in signal) and (u"time" in signal):
                 pyplot.plot(signal[u"time"], signal[u"values"])
